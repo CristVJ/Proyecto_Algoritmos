@@ -90,20 +90,27 @@ public class Grafo {
 	
 	public int[][] generarMatrizAdyacencia() {
 		
-		int matrizAdyacencia[][] = new int[size][size];
-		System.out.println(grafo.size());
-		
-		for (Nodo nodo : grafo) {
-			
-			for (Arista arista : nodo.getAristas()) {
-				
-				matrizAdyacencia[arista.getOrigen()][arista.getDestino()] = arista.getPeso();
-				matrizAdyacencia[arista.getDestino()][arista.getOrigen()] = arista.getPeso();
-			}
-			
-		}
-	   
-		return matrizAdyacencia;
+	    // Inicializar la matriz de adyacencia con ceros
+	    int matrizAdyacencia[][] = new int[size][size];
+
+	    // Asociamiento de IDs de los nodos con sus índices en la matriz de adyacencia
+	    Map<Integer, Integer> idToIndexMap = new HashMap<>();
+	    for (int ind = 0; ind < grafo.size(); ind++)
+	        idToIndexMap.put(grafo.get(ind).getId(), ind);
+
+	    // Guardado de los pesos de las aristas en la matriz de adyacencia
+	    for (Nodo nodo : grafo) {
+	    	
+	        int origenIndex = idToIndexMap.get(nodo.getId());
+	        for (Arista arista : nodo.getAristas()) {
+	        	
+	            int destinoIndex = idToIndexMap.get(arista.getDestino());
+	            matrizAdyacencia[origenIndex][destinoIndex] = arista.getPeso();
+	            matrizAdyacencia[destinoIndex][origenIndex] = arista.getPeso();
+	        }
+	    }
+
+	    return matrizAdyacencia;
 	}
 	
 	public void imprimirMatrizAdyacencia() {
