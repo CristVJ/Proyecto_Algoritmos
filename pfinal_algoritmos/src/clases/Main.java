@@ -6,7 +6,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		//Asakujaku
+		//Patata 27
 		int cantVertices = 0, cantAristas = 0, peso = 0, verticeAConectar = 0;
 		Scanner scanner = new Scanner(System.in);
 		
