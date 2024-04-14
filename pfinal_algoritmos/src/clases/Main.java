@@ -7,19 +7,19 @@ public class Main {
 	public static void main(String[] args) {
 		
 		//Patata 27
-		int cantVertices = 0, cantAristas = 0, peso = 0, verticeAConectar = 0;
+		int cantNodos = 0, cantAristas = 0, peso = 0, verticeAConectar = 0;
 		Scanner scanner = new Scanner(System.in);
 		
 		// Cuántos vértices?
 		System.out.println("¿Con cuántos vértices desea crear el grafo?");
-		cantVertices = scanner.nextInt();
+		cantNodos = scanner.nextInt();
 		
 		Grafo grafo = new Grafo();
-		grafo.inicializarMatriz(cantVertices);
+		grafo.inicializarGrafo(cantNodos);
 		
-		for (int ind = 0; ind < cantVertices; ind++) {
+		for (int ind = 0; ind < cantNodos; ind++) {
 			
-			System.out.println("\n¿Cuántas aristas tendrá el vértice "+ind+"?");
+			System.out.println("\n¿Cuántas aristas tendrá el nodo "+ind+"?");
 			cantAristas = scanner.nextInt();
 			
 			for (int ind1 = 0; ind1 < cantAristas; ind1++) {
@@ -37,27 +37,14 @@ public class Main {
 		}
 		
 		System.out.println("CREADO POR PRIMERA VEZ");
-		grafo.imprimirMatriz();
+		grafo.imprimirMatrizAdyacencia();
+		System.out.println();
 		
-		// Supongamos que se desea AGREGAR un nuevo vértice
-		
-		// Ahora, habrán 4 vértices
-		grafo.crearVertice(4);
-		
-		grafo.agregarArista(3, 0, 3);
-		grafo.agregarArista(3, 2, 1);
-		
-		System.out.println("AGREGANDO UN VÉRTICE");
-		grafo.imprimirMatriz();
-		///
-		
-		// Supongamos que se desea ELIMINAR un vértice
-		
-		grafo.eliminarVertice(3);
-		
-		System.out.println("ELIMINANDO UN VÉRTICE");
-		grafo.imprimirMatriz();
-		///
+		// Eliminando nodo
+		grafo.eliminarNodo(2);
+		System.out.println("LUEGO DE BORRAR");
+		grafo.imprimirMatrizAdyacencia();
+		System.out.println();
 		
 	}
 

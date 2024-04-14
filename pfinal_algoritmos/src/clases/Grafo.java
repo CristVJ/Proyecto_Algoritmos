@@ -1,88 +1,118 @@
 package clases;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Grafo {
 	
 	private int size;
-	private int idVertice;
-	private ArrayList<ArrayList<Integer>> matrizAdyacencia;
-	
+	private ArrayList<Nodo> grafo;
+
 	public Grafo() {
 		super();
-		this.matrizAdyacencia = new ArrayList<ArrayList<Integer>>();
+		this.grafo = new ArrayList<Nodo>();
 	}
 
 	public int getSize() {
 		return size;
 	}
 	
-	public int getIdVertice() {
-		return idVertice;
-	}
-	
-	public ArrayList<ArrayList<Integer>> getMatrizAdyacencia() {
-		return matrizAdyacencia;
+	public ArrayList<Nodo> getGrafo() {
+		return grafo;
 	}
 
-	public void setMatrizAdyacencia(ArrayList<ArrayList<Integer>> matrizAdyacencia) {
-		this.matrizAdyacencia = matrizAdyacencia;
+	public void setGrafo(ArrayList<Nodo> grafo) {
+		this.grafo = grafo;
 	}
 	
-	public void inicializarMatriz(int cantVertices) {
+	public void inicializarGrafo(int cantNodos) {
 		
-		size = cantVertices;
+		size = cantNodos;
 		
-		for (int ind1 = 0; ind1 < cantVertices; ind1++) {
+		for (int ind = 0; ind < cantNodos; ind++) {
 		
-			ArrayList<Integer> nuevoVertice = new ArrayList<Integer>();
-			for (int ind2 = 0; ind2 < cantVertices; ind2++)
-				nuevoVertice.add(0);
-			
-			matrizAdyacencia.add(nuevoVertice);
+			Nodo nuevoNodo = new Nodo();
+			nuevoNodo.setId(ind);
+			grafo.add(nuevoNodo);
 		}
-	}
-	
-	// Añadir un nuevo vértice al grafo, además de agregar un nuevo espacio disponible en cada vértice
-	public void crearVertice(int cantVertices) {
-		
-		ArrayList<Integer> nuevoVertice = new ArrayList<Integer>();
-		for (int ind = 0; ind < cantVertices; ind++) {
-			nuevoVertice.add(0);
-			if (ind < cantVertices-1)
-				matrizAdyacencia.get(ind).add(0);
-		}
-		
-		matrizAdyacencia.add(nuevoVertice);
-		size++;
-	}
-	
-	public void eliminarVertice(int verticeAEliminar) {
-		
-		for (ArrayList<Integer> vertice : matrizAdyacencia)
-			vertice.remove(verticeAEliminar);
-		
-		matrizAdyacencia.remove(verticeAEliminar);
-		size--;
-		
 	}
 	
 	public void agregarArista(int origen, int destino, int peso) {
 		
-		matrizAdyacencia.get(origen).set(destino, peso);
-		matrizAdyacencia.get(destino).set(origen, peso);
+		// Se añade una nueva arista en ambos nodos, ya que el grafo es no dirigido
+		Arista nuevaArista1 = new Arista();
+		nuevaArista1.setOrigen(origen);
+		nuevaArista1.setDestino(destino);
+		nuevaArista1.setPeso(peso);
+		
+		grafo.get(origen).getAristas().add(nuevaArista1);
+		
+		Arista nuevaArista2 = new Arista();
+		nuevaArista2.setOrigen(destino);
+		nuevaArista2.setDestino(origen);
+		nuevaArista2.setPeso(peso);
+		
+		grafo.get(destino).getAristas().add(nuevaArista2);
+		
 	}
 	
-	public void imprimirMatriz() {
+	public void eliminarNodo(int nodoAEliminar) {
 		
-		for (int ind1 = 0; ind1 < size; ind1++) {
+		for (Nodo nodo : grafo) {
 			
-			for (int ind2 = 0; ind2 < size; ind2++) 
-				System.out.print(matrizAdyacencia.get(ind1).get(ind2)+" ");
+			int cantAristas = nodo.getAristas().size();
+			for (int ind = cantAristas-1; ind >= 0; ind--) {
+				
+				if (nodo.getAristas().get(ind).getOrigen() == nodoAEliminar ||
+					nodo.getAristas().get(ind).getDestino() == nodoAEliminar)
+					nodo.getAristas().remove(ind);
+				
+			}
 			
-			System.out.println();
 		}
 		
+		int ind = 0;
+		boolean borrado = false;
+		while (ind < size && !borrado) {
+			
+			if (grafo.get(ind).getId() == nodoAEliminar) {
+				grafo.remove(ind);
+				size--;
+				borrado = true;
+			}
+			
+			ind++;
+		}
+		
+	}
+	
+	public int[][] generarMatrizAdyacencia() {
+		
+		int matrizAdyacencia[][] = new int[size][size];
+		System.out.println(grafo.size());
+		
+		for (Nodo nodo : grafo) {
+			
+			for (Arista arista : nodo.getAristas()) {
+				
+				matrizAdyacencia[arista.getOrigen()][arista.getDestino()] = arista.getPeso();
+				matrizAdyacencia[arista.getDestino()][arista.getOrigen()] = arista.getPeso();
+			}
+			
+		}
+	   
+		return matrizAdyacencia;
+	}
+	
+	public void imprimirMatrizAdyacencia() {
+		
+		int matriz[][] = generarMatrizAdyacencia();
+		
+		for (int ind = 0; ind < size; ind++)
+            System.out.println(Arrays.toString(matriz[ind]));
+	
 	}
 	
 }
