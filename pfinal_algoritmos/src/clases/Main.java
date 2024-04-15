@@ -62,57 +62,32 @@ public class Main {
 			System.out.println("\t1. Agregar NODO\n"
 							 + "\t2. Editar NODO\n"
 						 	 + "\t3. Eliminar NODO\n"
-						 	 + "\t4. Salir\n");
+						 	 + "\t4. Mostrar NODOS\n"
+						 	 + "\t5. Salir\n");
 			
 			opcion = scanner.nextInt();
 			
 			if (opcion == 1) {
-				
-				Nodo nuevoNodo = grafo.crearNodo();
-				
-				System.out.println("\n¿Cuántas aristas tendrá el nuevo nodo?");
-				cantAristas = scanner.nextInt();
-				
-				for (int ind = 0; ind < cantAristas; ind++) {
-					
-					System.out.println("\nIndique con cuál vértice se conectará la arista "+(ind+1)+":");
-					
-					boolean validado = false;
-					
-					do {
-						
-						verticeAConectar = scanner.nextInt();
-						
-						if (grafo.buscarNodoById(verticeAConectar) != null)
-							validado = true;
-						
-					} while (!validado);
-					
-					
-					System.out.println("\nIndique el peso de la conexión de la arista "+(ind+1)+":");
-					
-					do {
-						
-						peso = scanner.nextInt();
-						
-						if (peso > 0)
-							validado = true;
-						
-					} while (!validado);
-					
-					grafo.agregarArista(nuevoNodo.getId(), verticeAConectar, peso);
-					
-				}
-				
+				grafo.agregarNodo(grafo);
 			}
 			else if (opcion == 2) {
 				
 			}
+			
 			else if (opcion == 3) {
 				
 			}
+			
 			else if (opcion == 4) {
+				
+			}
+			
+			else if (opcion == 5) {
 				menu = false;
+			}
+			
+			else if (opcion > 5 || opcion <= 0) {
+				System.out.println("\nERROR, Por favor ingrese una opción válida\n");
 			}
 			
 		} while (menu);
