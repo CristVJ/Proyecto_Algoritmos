@@ -10,7 +10,7 @@ public class Main {
 		Scanner scanner = new Scanner(System.in);
 		
 		// Cuántos vértices?
-		System.out.println("¿Con cuántos vértices desea crear el grafo?");
+		System.out.print("¿Con cuántos vértices desea crear el grafo? ");
 		cantNodos = scanner.nextInt();
 		
 		Grafo grafo = new Grafo();
@@ -18,15 +18,15 @@ public class Main {
 		
 		for (int ind = 0; ind < cantNodos; ind++) {
 			
-			System.out.println("\n¿Cuántas aristas tendrá el nodo "+ind+"?");
+			System.out.print("\n¿Cuántas aristas tendrá el nodo "+ind+"? ");
 			cantAristas = scanner.nextInt();
 			
 			for (int ind1 = 0; ind1 < cantAristas; ind1++) {
 				
-				System.out.println("\nIndique con cuál vértice se conectará la arista "+(ind1+1)+":");
+				System.out.print("\nIndique con cuál vértice se conectará la arista "+(ind1+1)+": ");
 				verticeAConectar = scanner.nextInt();
 				
-				System.out.println("\nIndique el peso de la conexión de la arista "+(ind1+1)+":");
+				System.out.print("\nIndique el peso de la conexión de la arista "+(ind1+1)+": ");
 				peso = scanner.nextInt();
 				
 				grafo.agregarArista(ind, verticeAConectar, peso);
@@ -56,7 +56,7 @@ public class Main {
 		do {
 			
 			System.out.println();
-			grafo.imprimirMatrizAdyacencia();
+			grafo.imprimirMatrizAdyacencia2();
 			System.out.println();
 			
 			System.out.println("\t1. Agregar NODO\n"
@@ -65,10 +65,14 @@ public class Main {
 						 	 + "\t4. Mostrar NODOS\n"
 						 	 + "\t5. Salir\n");
 			
+			System.out.print("\tOpción: ");
 			opcion = scanner.nextInt();
 			
 			if (opcion == 1) {
+				// Decir Cristopher sobre esta función
 				grafo.agregarNodo(grafo);
+				grafo.imprimirMatrizAdyacencia();
+				System.out.println();
 			}
 			else if (opcion == 2) {
 				
@@ -76,6 +80,24 @@ public class Main {
 			
 			else if (opcion == 3) {
 				
+				int nodoAEliminar = 0;
+				boolean validado = false;
+				
+				do {
+					
+					System.out.print("\nIngrese el nodo que desea borrar: ");
+					nodoAEliminar = scanner.nextInt();
+					
+					if (grafo.buscarNodoById(nodoAEliminar) != null)
+						validado = true;
+					else
+						System.out.println("\nERROR, Por favor ingrese un nodo válido\n");
+					
+				} while (!validado);
+				
+				grafo.eliminarNodo(nodoAEliminar);
+				grafo.imprimirMatrizAdyacencia();
+				System.out.println();
 			}
 			
 			else if (opcion == 4) {

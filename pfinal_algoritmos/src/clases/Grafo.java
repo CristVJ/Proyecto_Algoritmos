@@ -112,13 +112,13 @@ public class Grafo {
 			
 			do {
 				
-				System.out.println("\nIndique con cuál vértice se conectará la arista "+(ind+1)+":");
+				System.out.println("\nIndique con cuál nodo se conectará la arista "+(ind+1)+":");
 				verticeAConectar = scanner.nextInt();
 				
 				if (grafo.buscarNodoById(verticeAConectar) != null)
 					validado = true;
 				else
-					System.out.println("\nERROR, Por favor ingrese un vértice válido\n");
+					System.out.println("\nERROR, Por favor ingrese un nodo válido\n");
 				
 			} while (!validado);
 			validado = false;
@@ -142,43 +142,50 @@ public class Grafo {
 			
 		}
 		
-		System.out.println("\nSE AGREGÓ EL VÉRTICE: "+nuevoNodo.getId()+" EXITOSAMENTE\n");
+		System.out.println("\nSE AGREGÓ EL NODO: "+nuevoNodo.getId()+" EXITOSAMENTE\n");
 	}
 	
 	public void eliminarNodo(int nodoAEliminar) {
 		
-		for (Nodo nodo : grafo) {
+		Nodo nodoAVerificar = buscarNodoById(nodoAEliminar);
+		
+		if (nodoAVerificar != null) {
 			
-			/* Recorrido de todas las aristas de todos los nodos, para verificar si el nodo que
-			 * se desea eliminar, está presente en alguna de las aristas o conexiones de otro nodo.
-			 * Se realiza en reversa para evitar problemas de manejo de índices al
-			 * momento de borrar e iterar al mismo tiempo */
-			int cantAristas = nodo.getAristas().size();
-			for (int ind = cantAristas-1; ind >= 0; ind--) {
+			for (Nodo nodo : grafo) {
 				
-				if (nodo.getAristas().get(ind).getOrigen() == nodoAEliminar ||
-					nodo.getAristas().get(ind).getDestino() == nodoAEliminar)
-					nodo.getAristas().remove(ind);
+				/* Recorrido de todas las aristas de todos los nodos, para verificar si el nodo que
+				 * se desea eliminar, está presente en alguna de las aristas o conexiones de otro nodo.
+				 * Se realiza en reversa para evitar problemas de manejo de índices al
+				 * momento de borrar e iterar al mismo tiempo */
+				int cantAristas = nodo.getAristas().size();
+				for (int ind = cantAristas-1; ind >= 0; ind--) {
+					
+					if (nodo.getAristas().get(ind).getOrigen() == nodoAEliminar ||
+						nodo.getAristas().get(ind).getDestino() == nodoAEliminar)
+						nodo.getAristas().remove(ind);
+					
+				}
 				
 			}
 			
-		}
-		
-		// Eliminación del nodo que, finalmente, queda sin aristas
-		int ind = 0;
-		boolean eliminado = false;
-		
-		while (ind < size && !eliminado) {
+			// Eliminación del nodo que, finalmente, queda sin aristas
+			int ind = 0;
+			boolean eliminado = false;
 			
-			if (grafo.get(ind).getId() == nodoAEliminar) {
-				grafo.remove(ind);
-				size--;
-				eliminado = true;
+			while (ind < size && !eliminado) {
+				
+				if (grafo.get(ind).getId() == nodoAEliminar) {
+					grafo.remove(ind);
+					size--;
+					eliminado = true;
+				}
+				
+				ind++;
 			}
 			
-			ind++;
+			eliminado = true;
 		}
-		
+	
 	}
 	
 	public void eliminarArista(Arista aristaAEliminar) {
@@ -251,6 +258,26 @@ public class Grafo {
 			System.out.print("\t"+grafo.get(ind).getId()+" ");
             System.out.println(Arrays.toString(matriz[ind]));
 		}
+	}
+	
+	public void imprimirMatrizAdyacencia2() {
+		
+		int matriz[][] = generarMatrizAdyacencia();
+		
+		System.out.print("\t   ");
+		for (int ind = 0; ind < size; ind++) {
+			System.out.printf("- %-3d", grafo.get(ind).getId());
+		}
+		System.out.print("\n\t");
+		for (int ind1 = 0; ind1 < size; ind1++) {
+			System.out.printf("%-2d ", grafo.get(ind1).getId());
+			for (int ind2 = 0; ind2 < size; ind2++) {
+				System.out.printf("| %-3d", matriz[ind1][ind2]);
+			}
+			System.out.print("\n\t");
+		}
+		
+		System.out.println();
 	}
 	
 }
