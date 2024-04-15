@@ -98,54 +98,6 @@ public class Grafo {
 		
 	}
 	
-	public void agregarNodo(Grafo grafo) {
-
-		Nodo nuevoNodo = grafo.crearNodo();
-		int cantAristas = 0, verticeAConectar = 0, peso = 0;
-		Scanner scanner = new Scanner(System.in);
-		
-		System.out.println("\n¿Cuántas aristas tendrá el nuevo nodo?");
-		cantAristas = scanner.nextInt();
-		
-		for (int ind = 0; ind < cantAristas; ind++) {
-			
-			boolean validado = false;
-			
-			do {
-				
-				System.out.println("\nIndique con cuál nodo se conectará la arista "+(ind+1)+":");
-				verticeAConectar = scanner.nextInt();
-				
-				if (grafo.buscarNodoById(verticeAConectar) != null)
-					validado = true;
-				else
-					System.out.println("\nERROR, Por favor ingrese un nodo válido\n");
-				
-			} while (!validado);
-			validado = false;
-			
-			do {
-				
-				System.out.println("\nIndique el peso de la conexión de la arista "+(ind+1)+":");
-				peso = scanner.nextInt();
-				
-				if (peso > 0) {
-					validado = true;
-				}
-				
-				else {
-					System.out.println("\nERROR, Por favor ingrese un peso válido\n");
-				}
-				
-			} while (!validado);
-			
-			grafo.agregarArista(nuevoNodo.getId(), verticeAConectar, peso);
-			
-		}
-		
-		System.out.println("\nSE AGREGÓ EL NODO: "+nuevoNodo.getId()+" EXITOSAMENTE\n");
-	}
-	
 	public void eliminarNodo(int nodoAEliminar) {
 		
 		Nodo nodoAVerificar = buscarNodoById(nodoAEliminar);

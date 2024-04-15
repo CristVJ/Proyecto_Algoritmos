@@ -8,6 +8,7 @@ public class Main {
 		
 		int cantNodos = 0, cantAristas = 0, peso = 0, verticeAConectar = 0, verticeInicio = 0, verticeDestino = 0;
 		Scanner scanner = new Scanner(System.in);
+		boolean validado = false;
 		
 		// Cuántos vértices?
 		System.out.print("¿Con cuántos vértices desea crear el grafo? ");
@@ -18,16 +19,45 @@ public class Main {
 		
 		for (int ind = 0; ind < cantNodos; ind++) {
 			
-			System.out.print("\n¿Cuántas aristas tendrá el nodo "+ind+"? ");
-			cantAristas = scanner.nextInt();
+			do {
+				System.out.print("\n¿Cuántas aristas tendrá el nodo "+ind+"? ");
+				cantAristas = scanner.nextInt();
+				if(cantAristas <= 0) {
+					System.out.println();
+					System.out.print("\nERROR, La cantidad de aristas debe ser mayor a 0 ");
+					System.out.println();
+				}
+			}while(cantAristas <= 0);
 			
 			for (int ind1 = 0; ind1 < cantAristas; ind1++) {
 				
-				System.out.print("\nIndique con cuál vértice se conectará la arista "+(ind1+1)+": ");
-				verticeAConectar = scanner.nextInt();
+				do {
+					
+					System.out.println("\nIndique con cuál nodo se conectará la arista "+(ind+1)+":");
+					verticeAConectar = scanner.nextInt();
+					
+					if (grafo.buscarNodoById(verticeAConectar) != null)
+						validado = true;
+					else
+						System.out.println("\nERROR, Por favor ingrese un nodo válido\n");
+					
+				} while (!validado);
+				validado = false;
 				
-				System.out.print("\nIndique el peso de la conexión de la arista "+(ind1+1)+": ");
-				peso = scanner.nextInt();
+				do {
+					
+					System.out.println("\nIndique el peso de la conexión de la arista "+(ind+1)+":");
+					peso = scanner.nextInt();
+					
+					if (peso > 0) {
+						validado = true;
+					}
+					
+					else {
+						System.out.println("\nERROR, Por favor ingrese un peso válido\n");
+					}
+					
+				}while (!validado);
 				
 				grafo.agregarArista(ind, verticeAConectar, peso);
 				 
@@ -69,11 +99,51 @@ public class Main {
 			opcion = scanner.nextInt();
 			
 			if (opcion == 1) {
-				// Decir Cristopher sobre esta función
-				grafo.agregarNodo(grafo);
+
+				Nodo nuevoNodo = grafo.crearNodo();
+				
+				System.out.println("\n¿Cuántas aristas tendrá el nuevo nodo?");
+				cantAristas = scanner.nextInt();
+				
+				for (int ind = 0; ind < cantAristas; ind++) {
+					
+					do {
+						
+						System.out.println("\nIndique con cuál nodo se conectará la arista "+(ind+1)+":");
+						verticeAConectar = scanner.nextInt();
+						
+						if (grafo.buscarNodoById(verticeAConectar) != null)
+							validado = true;
+						else
+							System.out.println("\nERROR, Por favor ingrese un nodo válido\n");
+						
+					} while (!validado);
+					validado = false;
+					
+					do {
+						
+						System.out.println("\nIndique el peso de la conexión de la arista "+(ind+1)+":");
+						peso = scanner.nextInt();
+						
+						if (peso > 0) {
+							validado = true;
+						}
+						
+						else {
+							System.out.println("\nERROR, Por favor ingrese un peso válido\n");
+						}
+						
+					} while (!validado);
+					
+					grafo.agregarArista(nuevoNodo.getId(), verticeAConectar, peso);
+					
+				}
+				
+				System.out.println("\nSE AGREGÓ EL NODO: "+nuevoNodo.getId()+" EXITOSAMENTE\n");
 				grafo.imprimirMatrizAdyacencia();
 				System.out.println();
 			}
+			
 			else if (opcion == 2) {
 				
 			}
@@ -81,7 +151,7 @@ public class Main {
 			else if (opcion == 3) {
 				
 				int nodoAEliminar = 0;
-				boolean validado = false;
+				validado = false;
 				
 				do {
 					
@@ -114,7 +184,6 @@ public class Main {
 						 	 + "\t5. Salir\n");
 					
 					opcion = scanner.nextInt();
-					int matrizAdyacencia[][] = grafo.generarMatrizAdyacencia();
 					
 					if(opcion == 1) {
 						System.out.println();
@@ -123,16 +192,16 @@ public class Main {
 					}
 					
 					else if(opcion == 2) {
-						System.out.println("COLOCA EL VERTICE DE INICIO: ");
+						System.out.println("COLOCA EL NODO DE INICIO: ");
 						verticeInicio = scanner.nextInt();
-						System.out.println("COLOCA EL VERTICE DE DESTINO: ");
+						System.out.println("COLOCA EL NODO DE DESTINO: ");
 						verticeDestino = scanner.nextInt();
-						grafo.dijkstra(matrizAdyacencia, verticeInicio, verticeDestino);
+						grafo.dijkstra(grafo.generarMatrizAdyacencia(), verticeInicio, verticeDestino);
 					}
 					
 					else if(opcion == 3) {
 						System.out.println("Distancias más cortas entre todos los pares de vértices");
-						int[][] distancias = grafo.floydwarshall(matrizAdyacencia); 
+						int[][] distancias = grafo.floydwarshall(grafo.generarMatrizAdyacencia()); 
 						
 					    for (int ind1 = 0; ind1 < distancias.length; ind1++) {  
 					        for (int ind2 = 0; ind2 < distancias.length; ind2++) {  
@@ -145,7 +214,7 @@ public class Main {
 					
 					else if(opcion == 4) {
 						//grafo.prim(matrizAdyacencia);
-						grafo.kruskal(matrizAdyacencia);
+						grafo.kruskal(grafo.generarMatrizAdyacencia());
 					}
 					
 					else if(opcion == 5) {
