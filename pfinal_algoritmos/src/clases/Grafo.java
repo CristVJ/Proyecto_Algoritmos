@@ -3,6 +3,7 @@ package clases;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Scanner;
@@ -279,5 +280,203 @@ public class Grafo {
 		
 		System.out.println();
 	}
+	
+	public void prim (int matriz[][]) {
+
+		int INF = Integer.MAX_VALUE;
+		int cantAristas = 0;
+
+		boolean[] visitado = new boolean[size];
+		
+		for (int ind = 0; ind < size; ind++) 
+			visitado[ind] = false;
+
+		visitado[0] = true;
+
+		System.out.println("Arista : Peso");
+
+		while (cantAristas < size - 1) {
+    	
+	    	int min = INF;
+		    int indFil = 0; 
+		    int indCol = 0;
+
+		    for (int ind1 = 0; ind1 < size; ind1++) {
+	    	
+		    	if (visitado[ind1] == true) {
+        	
+		    		for (int ind2 = 0; ind2 < size; ind2++) {
+            
+		    			if (!visitado[ind2] && matriz[ind1][ind2] != 0) {
+            	
+		    				if (min > matriz[ind1][ind2]) {
+            	  
+		    					min = matriz[ind1][ind2];
+		    					indFil = ind1;
+		    					indCol = ind2;
+		    				}
+		    			}
+		    		}
+		    	}
+		    }
+	    
+		    System.out.println(indFil + " - " + indCol + " :  " + matriz[indFil][indCol]);
+		    visitado[indCol] = true;
+		    cantAristas++;
+		}	
+	}
+	
+	static int encontrarVertice(int padre[], int i) {
+		
+	    while (padre[i] != i)
+	        i = padre[i];
+	    
+	    return i;
+	}
+	 
+	static void union(int padre[], int i, int j) {
+		
+		int a = encontrarVertice(padre, i);
+	    int b = encontrarVertice(padre, j);
+	    padre[a] = b;
+	}
+	
+	public void kruskal(int matriz[][]) {
+		
+		int[] padre = new int[size];
+		int costoMinimo = 0;
+		int INF = Integer.MAX_VALUE;
+		
+	    for (int ind = 0; ind < size; ind++)
+	        padre[ind] = ind;
+	    
+	    int cantAristas = 0;
+	    while (cantAristas < size - 1) {
+	    	
+	        int min = INF, a = -1, b = -1;
+	        for (int ind1 = 0; ind1 < size; ind1++) {
+	            for (int ind2 = 0; ind2 < size; ind2++) {
+	            	
+	                if (encontrarVertice(padre, ind1) != encontrarVertice(padre, ind2) && matriz[ind1][ind2] < min) {
+	                	
+	                    min = matriz[ind1][ind2];
+	                    a = ind1;
+	                    b = ind2;
+	                }
+	            }
+	        }
+	 
+	        union(padre, a, b);
+	        System.out.printf("Arista %d:(%d, %d) costo:%d \n", cantAristas++, a, b, min);
+	        costoMinimo += min;
+	    }
+	    
+	    System.out.printf("\n Costo mínimo = %d \n", costoMinimo);
+	}
+	
+	public void dijkstra(int[][] matriz, int verticeInicial, int nodoDestino) {
+
+	    boolean[] verticesVisitados = new boolean[size];
+	    int[] distancias = new int[size];
+	    int[] predecesores = new int[size];
+
+	    for (int ind = 0; ind < size; ind++) {
+	        verticesVisitados[ind] = false;
+	        distancias[ind] = Integer.MAX_VALUE;
+	        predecesores[ind] = -1; 
+	    }
+
+	    distancias[verticeInicial] = 0;
+
+	    while (!verticesVisitados[nodoDestino]) {
+	        int aux = encontrarMenorDistancia(distancias, verticesVisitados);
+	        verticesVisitados[aux] = true;
+
+	        for (int ind1 = 0; ind1 < size; ind1++) {
+	            if (!verticesVisitados[ind1] && matriz[aux][ind1] != 0 &&
+	                (distancias[aux] + matriz[aux][ind1] < distancias[ind1])) {
+	                distancias[ind1] = distancias[aux] + matriz[aux][ind1];
+	                predecesores[ind1] = aux;
+	            }
+	        }
+	    }
+
+	    imprimirCamino(predecesores, nodoDestino, verticeInicial, distancias);
+	} 
+    
+	private static int encontrarMenorDistancia(int[] distancias, boolean[] verticesVisitados) {
+		
+		int distanciaMinima = Integer.MAX_VALUE;  
+		int distanciaMinimaAlVertice = -1;
+		int cantDistancias = distancias.length;
+		
+		for (int ind = 0; ind < cantDistancias; ind++) {
+			
+			if (!verticesVisitados[ind] && distancias[ind] < distanciaMinima) {  
+				distanciaMinima = distancias[ind];  
+				distanciaMinimaAlVertice = ind;  
+			}  
+		}  
+		
+		return distanciaMinimaAlVertice;  
+	} 
+	
+	private static void imprimirCamino(int[] predecesores, int verticeDestino, int verticeInicial, int[] distancias) {
+	    List<Integer> camino = new ArrayList<>();
+	    int verticeActual = verticeDestino;
+	    while (verticeActual != -1 && verticeActual != verticeInicial) {
+	        camino.add(0, verticeActual);
+	        verticeActual = predecesores[verticeActual];
+	    }
+	    camino.add(0, verticeInicial);
+
+	    System.out.print("Camino desde " + verticeInicial + " hasta " + verticeDestino + ": ");
+	    int pesoTotal = distancias[verticeDestino];
+	    for (int ind = 0; ind < camino.size(); ind++) {
+	        System.out.print(camino.get(ind));
+	        if (ind != camino.size() - 1) {
+	            System.out.print(" -> ");
+	        }
+	    }
+	    System.out.println(" | Peso total: " + pesoTotal);
+	}
+	
+	public int[][] floydwarshall(int matrizAdyacencia[][]) {  
+		
+		int INF = Integer.MAX_VALUE; 
+		int sizeMatriz = matrizAdyacencia.length;  
+		int distancias[][] = crearMatrizDeDistancias(matrizAdyacencia);  
+   
+		for (int ind1 = 0; ind1 < sizeMatriz; ind1++) {  
+			for (int ind2 = 0; ind2 < sizeMatriz; ind2++) {  
+				for (int ind3 = 0; ind3 < sizeMatriz; ind3++) {  
+					if (distancias[ind2][ind1] < INF && distancias[ind1][ind3] < INF)  
+						distancias[ind2][ind3] = Math.min(distancias[ind2][ind3], distancias[ind2][ind1] + distancias[ind1][ind3]);  
+				}  
+			}  
+		}  
+    
+		return distancias;
+	}
+	
+	private int[][] crearMatrizDeDistancias(int matrizAdyacencia[][]) {
+		
+	   int INF = Integer.MAX_VALUE; 
+       int distancias[][] = new int[size][size];  
+   
+       for (int ind1 = 0; ind1 < size; ind1++) {  
+    	   for (int ind2 = 0; ind2 < size; ind2++) {  
+    		   
+    		   if (ind1 == ind2)  
+    			   distancias[ind1][ind2] = 0;  
+               else if (matrizAdyacencia[ind1][ind2] == 0)  
+            	   distancias[ind1][ind2] = INF;  
+               else  
+            	   distancias[ind1][ind2] = matrizAdyacencia[ind1][ind2];  
+           }  
+       }
+       
+       return distancias;  
+   }
 	
 }
