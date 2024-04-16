@@ -37,7 +37,7 @@ public class Grafo {
 		boolean encontrado = false;
 		int ind = 0;
 		
-		while (!encontrado && ind < grafo.size()) {
+		while (!encontrado && ind < size) {
 			
 			if (grafo.get(ind).getId() == idNodo) {
 				
@@ -79,20 +79,22 @@ public class Grafo {
 		return nuevoNodo;
 	}
 	
-	public void agregarArista(int origen, int destino, int peso) {
+	public void agregarArista(int origen, int destino, int distancia, int tiempo) {
 		
 		// Se añade una nueva arista en ambos nodos, ya que el grafo es no dirigido
 		Arista nuevaArista1 = new Arista();
 		nuevaArista1.setOrigen(origen);
 		nuevaArista1.setDestino(destino);
-		nuevaArista1.setPeso(peso);
+		nuevaArista1.setDistancia(distancia);
+		nuevaArista1.setTiempo(tiempo);
 		
 		grafo.get(origen).getAristas().add(nuevaArista1);
 		
 		Arista nuevaArista2 = new Arista();
 		nuevaArista2.setOrigen(destino);
 		nuevaArista2.setDestino(origen);
-		nuevaArista2.setPeso(peso);
+		nuevaArista2.setDistancia(distancia);
+		nuevaArista2.setTiempo(tiempo);
 		
 		grafo.get(destino).getAristas().add(nuevaArista2);
 		
@@ -143,42 +145,87 @@ public class Grafo {
 	
 	public void eliminarArista(Arista aristaAEliminar) {
 		
-		Nodo nodoOrigen = buscarNodoById(aristaAEliminar.getOrigen());
-		Nodo nodoDestino = buscarNodoById(aristaAEliminar.getDestino());
-		
-		int ind = 0, cantAristas = nodoOrigen.getAristas().size();
-		boolean eliminado = false;
-
-		while (ind < cantAristas && !eliminado) {
+		if (aristaAEliminar != null) {
 			
-			if (nodoOrigen.getAristas().get(ind).getOrigen() == aristaAEliminar.getOrigen() &&
-				nodoOrigen.getAristas().get(ind).getDestino() == aristaAEliminar.getDestino()) {
-				nodoOrigen.getAristas().remove(ind);
-				eliminado = true;
-			}
+			Nodo nodoOrigen = buscarNodoById(aristaAEliminar.getOrigen());
+			Nodo nodoDestino = buscarNodoById(aristaAEliminar.getDestino());
+			
+			int ind = 0, cantAristas = nodoOrigen.getAristas().size();
+			boolean eliminado = false;
+	
+			while (ind < cantAristas && !eliminado) {
 				
+				if (nodoOrigen.getAristas().get(ind).getOrigen() == aristaAEliminar.getOrigen() &&
+					nodoOrigen.getAristas().get(ind).getDestino() == aristaAEliminar.getDestino()) {
+					nodoOrigen.getAristas().remove(ind);
+					eliminado = true;
+				}
+					
+				ind++;
+			}
 			
-			ind++;
+			ind = 0; 
+			cantAristas = nodoDestino.getAristas().size();
+			
+			while (ind < cantAristas && !eliminado) {
+				
+				if (nodoDestino.getAristas().get(ind).getOrigen() == aristaAEliminar.getDestino() &&
+					nodoDestino.getAristas().get(ind).getDestino() == aristaAEliminar.getOrigen()) {
+					nodoDestino.getAristas().remove(ind);
+					eliminado = true;
+				}
+					
+				
+				ind++;
+			}
+		}
+	}
+	
+	public Arista encontrarAristaAdyacente(Arista arista) {
+		
+		Arista aristaAdyacente = null;
+		Nodo nodoDestino = buscarNodoById(arista.getDestino());
+		int ind = 0, cantAristas = nodoDestino.getAristas().size();
+		boolean encontrado = false;
+		
+		while (ind < cantAristas && !encontrado) {
+			
+			aristaAdyacente = nodoDestino.getAristas().get(ind);
+			
+			if (verificarAristasAdyacentes(arista, aristaAdyacente))
+				encontrado = true;
+			
+			
+			ind++;			
 		}
 		
-		ind = 0; 
-		cantAristas = nodoDestino.getAristas().size();
+		return aristaAdyacente;
+	}
+	
+	// Retorna verdadero si ambas aristas conectan a los mismos nodos; falso en caso contrario
+	public boolean verificarAristasAdyacentes(Arista arista1, Arista arista2) {
 		
-		while (ind < cantAristas && !eliminado) {
-			
-			if (nodoDestino.getAristas().get(ind).getOrigen() == aristaAEliminar.getDestino() &&
-				nodoDestino.getAristas().get(ind).getDestino() == aristaAEliminar.getOrigen()) {
-				nodoDestino.getAristas().remove(ind);
-				eliminado = true;
-			}
-				
-			
-			ind++;
-		}
+		if (arista1.getOrigen() == arista2.getDestino() && arista1.getDestino() == arista2.getOrigen())
+			return true;
+		else 
+			return false;
 		
 	}
 	
-	public int[][] generarMatrizAdyacencia() {
+	public void listarAristasNodo(Nodo nodo) {
+		
+		int cantAristas = nodo.getAristas().size();
+		
+		for (int ind = 0; ind < cantAristas; ind++)
+			System.out.printf("%-2d. ( %-2d ) <---> ( %-2d ) | Distancia: %d | Tiempo: %d|\n", ind+1, nodo.getAristas().get(ind).getOrigen(),
+							  nodo.getAristas().get(ind).getDestino(), nodo.getAristas().get(ind).getDistancia(), nodo.getAristas().get(ind).getTiempo());
+	
+	}
+	
+	/* Generación de matriz adyacencia para ser utilizada en la ejecución de los algoritmos. 
+	 * Si "usarDistancia" es verdadero, se utilizará el atributo distancia como peso de la
+	 * arista, en caso contrario, se usará el tiempo */
+	public int[][] generarMatrizAdyacencia(boolean usarDistancia) {
 		
 	    // Inicializar la matriz de adyacencia con ceros
 	    int matrizAdyacencia[][] = new int[size][size];
@@ -195,27 +242,27 @@ public class Grafo {
 	        for (Arista arista : nodo.getAristas()) {
 	        	
 	            int indDestino = idToIndMap.get(arista.getDestino());
-	            matrizAdyacencia[indOrigen][indDestino] = arista.getPeso();
-	            matrizAdyacencia[indDestino][indOrigen] = arista.getPeso();
+	            
+	            if (usarDistancia) {
+	            	
+		            matrizAdyacencia[indOrigen][indDestino] = arista.getDistancia();
+		            matrizAdyacencia[indDestino][indOrigen] = arista.getDistancia();
+	            }
+	            else {
+					
+		            matrizAdyacencia[indOrigen][indDestino] = arista.getTiempo();
+		            matrizAdyacencia[indDestino][indOrigen] = arista.getTiempo();
+				}
+
 	        }
 	    }
 
 	    return matrizAdyacencia;
 	}
 	
-	public void imprimirMatrizAdyacencia() {
+	public void imprimirMatrizAdyacencia(boolean usarDistancia) {
 		
-		int matriz[][] = generarMatrizAdyacencia();
-		
-		for (int ind = 0; ind < size; ind++) {
-			System.out.print("\t"+grafo.get(ind).getId()+" ");
-            System.out.println(Arrays.toString(matriz[ind]));
-		}
-	}
-	
-	public void imprimirMatrizAdyacencia2() {
-		
-		int matriz[][] = generarMatrizAdyacencia();
+		int matriz[][] = generarMatrizAdyacencia(usarDistancia);
 		
 		System.out.print("\t   ");
 		for (int ind = 0; ind < size; ind++) {

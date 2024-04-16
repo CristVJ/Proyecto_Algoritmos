@@ -4,7 +4,8 @@ public class Arista {
 
 	private int origen;
 	private int destino;
-	private int peso;
+	private int distancia;
+	private int tiempo;
 	
 	public int getOrigen() {
 		return origen;
@@ -21,13 +22,21 @@ public class Arista {
 	public void setDestino(int destino) {
 		this.destino = destino;
 	}
-	
-	public int getPeso() {
-		return peso;
+
+	public int getDistancia() {
+		return distancia;
 	}
-	
-	public void setPeso(int peso) {
-		this.peso = peso;
+
+	public void setDistancia(int distancia) {
+		this.distancia = distancia;
+	}
+
+	public int getTiempo() {
+		return tiempo;
+	}
+
+	public void setTiempo(int tiempo) {
+		this.tiempo = tiempo;
 	}
 	
 }
