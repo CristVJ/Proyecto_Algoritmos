@@ -10,6 +10,8 @@ import java.util.Scanner;
 
 public class Grafo {
 	
+	/* El atributo id sirve para controlar el número identificador que se le colocará a un nodo
+	 * cada vez que se cree. Es único e irremplazable */
 	private int id;
 	private int size;
 	private ArrayList<Nodo> grafo;
@@ -31,6 +33,7 @@ public class Grafo {
 		this.grafo = grafo;
 	}
 	
+	// Su objetivo es encontrar un nodo a partir de su id único, y retornarlo en caso de que exista
 	public Nodo buscarNodoById(int idNodo) {
 		
 		Nodo nodoABuscar = null;
@@ -52,7 +55,7 @@ public class Grafo {
 		return nodoABuscar;
 	}
 	
-	// Creación inicial de la estructura grafo, lista para añadir aristas en cualquier nodo
+	// Creación inicial de la estructura grafo, lista para añadir aristas en cualquier nodo inicial
 	public void inicializarGrafo(int cantNodos) {
 		
 		size = cantNodos;
@@ -69,7 +72,7 @@ public class Grafo {
 	public Nodo crearNodo() {
 		
 		/* Se añade el nuevo nodo luego de ser identificado, para poder agregarle aristas, además,
-		 * se retorna para tenerlo a mano en caso necesario */
+		 * se retorna para tenerlo a mano y agregarle aristas directamente */
 		Nodo nuevoNodo = new Nodo();
 		nuevoNodo.setId(id);
 		grafo.add(nuevoNodo);
@@ -79,16 +82,21 @@ public class Grafo {
 		return nuevoNodo;
 	}
 	
+	/* Se agrega una arista con las características que se le pasen por parámetro en cada nodo (origen y destino),
+	 * pues, en este proyecto, se está trabajando con grafos no dirigidos, ya que los algoritmos de Prim y Kruskal
+	 * están diseñados para trabajar directamente con esta variante de la estructura de datos abstracta */
 	public void agregarArista(int origen, int destino, int distancia, int tiempo) {
 		
-		// Se añade una nueva arista en ambos nodos, ya que el grafo es no dirigido
+		Nodo nodoOrigen, nodoDestino;
+		
 		Arista nuevaArista1 = new Arista();
 		nuevaArista1.setOrigen(origen);
 		nuevaArista1.setDestino(destino);
 		nuevaArista1.setDistancia(distancia);
 		nuevaArista1.setTiempo(tiempo);
 		
-		grafo.get(origen).getAristas().add(nuevaArista1);
+		nodoOrigen = buscarNodoById(origen);
+		nodoOrigen.getAristas().add(nuevaArista1);
 		
 		Arista nuevaArista2 = new Arista();
 		nuevaArista2.setOrigen(destino);
@@ -96,8 +104,8 @@ public class Grafo {
 		nuevaArista2.setDistancia(distancia);
 		nuevaArista2.setTiempo(tiempo);
 		
-		grafo.get(destino).getAristas().add(nuevaArista2);
-		
+		nodoDestino = buscarNodoById(destino);
+		nodoDestino.getAristas().add(nuevaArista2);
 	}
 	
 	public void eliminarNodo(int nodoAEliminar) {
@@ -140,9 +148,10 @@ public class Grafo {
 			
 			eliminado = true;
 		}
-	
 	}
 	
+	/* Se decidió que, al eliminar una arista, se borren las conexiones de ambos lados, para evitar incongruencias
+	 * en el manejo de los nodos del grafo no dirigido */
 	public void eliminarArista(Arista aristaAEliminar) {
 		
 		if (aristaAEliminar != null) {
@@ -152,7 +161,8 @@ public class Grafo {
 			
 			int ind = 0, cantAristas = nodoOrigen.getAristas().size();
 			boolean eliminado = false;
-	
+			
+			// Primero, se busca la arista en el ArrayList de aristas del nodo de origen y se elimina
 			while (ind < cantAristas && !eliminado) {
 				
 				if (nodoOrigen.getAristas().get(ind).getOrigen() == aristaAEliminar.getOrigen() &&
@@ -167,6 +177,7 @@ public class Grafo {
 			ind = 0; 
 			cantAristas = nodoDestino.getAristas().size();
 			
+			// Luego, se busca la arista en el ArrayList de aristas del nodo de destino y se elimina
 			while (ind < cantAristas && !eliminado) {
 				
 				if (nodoDestino.getAristas().get(ind).getOrigen() == aristaAEliminar.getDestino() &&
@@ -181,6 +192,9 @@ public class Grafo {
 		}
 	}
 	
+	/* Se le denominó "Arista adyacente" a la arista que conecta los mismos nodos que otra, pero en sentido
+	 * contrario. Esta función resulta útil para editar los pesos (distancia o tiempo) luego de haber hallado
+	 * el par de conexiones */
 	public Arista encontrarAristaAdyacente(Arista arista) {
 		
 		Arista aristaAdyacente = null;
@@ -212,6 +226,7 @@ public class Grafo {
 		
 	}
 	
+	// Listado organizado de todas las aristas que posee un nodo, junto con las propiedades de la misma
 	public void listarAristasNodo(Nodo nodo) {
 		
 		int cantAristas = nodo.getAristas().size();
@@ -222,9 +237,8 @@ public class Grafo {
 	
 	}
 	
-	/* Generación de matriz adyacencia para ser utilizada en la ejecución de los algoritmos. 
-	 * Si "usarDistancia" es verdadero, se utilizará el atributo distancia como peso de la
-	 * arista, en caso contrario, se usará el tiempo */
+	/* Generación de matriz adyacencia para ser utilizada en la ejecución de los algoritmos. Si "usarDistancia"
+	 * es verdadero, se utilizará el atributo distancia como peso de la arista; en caso contrario, se usará el tiempo */
 	public int[][] generarMatrizAdyacencia(boolean usarDistancia) {
 		
 	    // Inicializar la matriz de adyacencia con ceros
@@ -235,7 +249,7 @@ public class Grafo {
 	    for (int ind = 0; ind < grafo.size(); ind++)
 	        idToIndMap.put(grafo.get(ind).getId(), ind);
 
-	    // Guardado de los pesos de las aristas en la matriz de adyacencia
+	    // Guardado de los pesos (distancia o tiempo) de las aristas en la matriz de adyacencia
 	    for (Nodo nodo : grafo) {
 	    	
 	        int indOrigen = idToIndMap.get(nodo.getId());
@@ -260,6 +274,7 @@ public class Grafo {
 	    return matrizAdyacencia;
 	}
 	
+	// Despliegue organizado e identificado en consola de la matriz de adyacencia descriptiva del grafo no dirigido
 	public void imprimirMatrizAdyacencia(boolean usarDistancia) {
 		
 		int matriz[][] = generarMatrizAdyacencia(usarDistancia);
@@ -281,10 +296,12 @@ public class Grafo {
 	}
 	
 	public void prim (int matriz[][]) {
-
+		
+	    // Se inicializa el valor de infinito como el máximo valor entero posible
 		int INF = Integer.MAX_VALUE;
 		int cantAristas = 0;
-
+		
+		// Arreglo para marcar nodos visitados
 		boolean[] visitado = new boolean[size];
 		
 		for (int ind = 0; ind < size; ind++) 
@@ -299,7 +316,8 @@ public class Grafo {
 	    	int min = INF;
 		    int indFil = 0; 
 		    int indCol = 0;
-
+		    
+	        // Se itera sobre todos los nodos visitados para encontrar la arista mínima que conecta un nodo visitado con uno no visitado
 		    for (int ind1 = 0; ind1 < size; ind1++) {
 	    	
 		    	if (visitado[ind1] == true) {
@@ -307,7 +325,8 @@ public class Grafo {
 		    		for (int ind2 = 0; ind2 < size; ind2++) {
             
 		    			if (!visitado[ind2] && matriz[ind1][ind2] != 0) {
-            	
+		    				
+                            // Se actualiza la mínima arista y los índices de fila y columna si se encuentra una menor
 		    				if (min > matriz[ind1][ind2]) {
             	  
 		    					min = matriz[ind1][ind2];
@@ -325,7 +344,7 @@ public class Grafo {
 		}	
 	}
 	
-	static int encontrarVertice(int padre[], int i) {
+	public static int encontrarVertice(int padre[], int i) {
 		
 	    while (padre[i] != i)
 	        i = padre[i];
@@ -333,7 +352,7 @@ public class Grafo {
 	    return i;
 	}
 	 
-	static void union(int padre[], int i, int j) {
+	public static void union(int padre[], int i, int j) {
 		
 		int a = encontrarVertice(padre, i);
 	    int b = encontrarVertice(padre, j);
@@ -342,10 +361,12 @@ public class Grafo {
 	
 	public void kruskal(int matriz[][]) {
 		
+	    // Arreglo para almacenar los padres de los nodos en los conjuntos
 		int[] padre = new int[size];
 		int costoMinimo = 0;
 		int INF = Integer.MAX_VALUE;
 		
+	    // Se inicializa cada nodo como su propio padre.
 	    for (int ind = 0; ind < size; ind++)
 	        padre[ind] = ind;
 	    
@@ -353,9 +374,12 @@ public class Grafo {
 	    while (cantAristas < size - 1) {
 	    	
 	        int min = INF, a = -1, b = -1;
+	        // Se itera sobre todas las aristas para encontrar la mínima que no forme un ciclo
 	        for (int ind1 = 0; ind1 < size; ind1++) {
 	            for (int ind2 = 0; ind2 < size; ind2++) {
 	            	
+	            	/* Se actualiza la arista mínima y sus nodos asociados si los nodos no pertenecen al mismo conjunto
+	            	 * y el peso de la arista es menor que el mínimo actual */
 	                if (encontrarVertice(padre, ind1) != encontrarVertice(padre, ind2) && matriz[ind1][ind2] < min) {
 	                	
 	                    min = matriz[ind1][ind2];
@@ -376,9 +400,12 @@ public class Grafo {
 	public void dijkstra(int[][] matriz, int verticeInicial, int nodoDestino) {
 
 	    boolean[] verticesVisitados = new boolean[size];
+	    // Arreglo para almacenar las distancias mínimas desde el vértice inicial a cada vértice
 	    int[] distancias = new int[size];
+	    // Arreglo para almacenar los predecesores de cada vértice en el camino más corto
 	    int[] predecesores = new int[size];
 
+	    // Se inicializan todos los vértices como no visitados, con distancia infinita y sin predecesores
 	    for (int ind = 0; ind < size; ind++) {
 	        verticesVisitados[ind] = false;
 	        distancias[ind] = Integer.MAX_VALUE;
@@ -386,11 +413,13 @@ public class Grafo {
 	    }
 
 	    distancias[verticeInicial] = 0;
-
+	    
+	    /* Se encuentra el vértice con la distancia mínima no visitado, mientras el nodo destino no esté visitado */
 	    while (!verticesVisitados[nodoDestino]) {
 	        int aux = encontrarMenorDistancia(distancias, verticesVisitados);
 	        verticesVisitados[aux] = true;
 
+	        // Se actualizan las distancias mínimas a los vértices vecinos no visitados
 	        for (int ind1 = 0; ind1 < size; ind1++) {
 	            if (!verticesVisitados[ind1] && matriz[aux][ind1] != 0 &&
 	                (distancias[aux] + matriz[aux][ind1] < distancias[ind1])) {
@@ -403,6 +432,7 @@ public class Grafo {
 	    imprimirCamino(predecesores, nodoDestino, verticeInicial, distancias);
 	} 
     
+	// Esta función tiene como finalidad encontrar el vértice con la distancia mínima entre los vértices no visitados
 	private static int encontrarMenorDistancia(int[] distancias, boolean[] verticesVisitados) {
 		
 		int distanciaMinima = Integer.MAX_VALUE;  
@@ -420,15 +450,21 @@ public class Grafo {
 		return distanciaMinimaAlVertice;  
 	} 
 	
+	
 	private static void imprimirCamino(int[] predecesores, int verticeDestino, int verticeInicial, int[] distancias) {
-	    List<Integer> camino = new ArrayList<>();
+		
+		// Lista encargada de almacenar el camino
+		List<Integer> camino = new ArrayList<>();
 	    int verticeActual = verticeDestino;
+	    
+	    // Se recorre el camino desde el vértice destino hasta el inicial, mediante los predecesores
 	    while (verticeActual != -1 && verticeActual != verticeInicial) {
 	        camino.add(0, verticeActual);
 	        verticeActual = predecesores[verticeActual];
 	    }
 	    camino.add(0, verticeInicial);
-
+	    
+	    // Despliegue organizado del camino y el peso total
 	    System.out.print("Camino desde " + verticeInicial + " hasta " + verticeDestino + ": ");
 	    int pesoTotal = distancias[verticeDestino];
 	    for (int ind = 0; ind < camino.size(); ind++) {
@@ -437,6 +473,7 @@ public class Grafo {
 	            System.out.print(" -> ");
 	        }
 	    }
+	    
 	    System.out.println(" | Peso total: " + pesoTotal);
 	}
 	
@@ -445,37 +482,41 @@ public class Grafo {
 		int INF = Integer.MAX_VALUE; 
 		int sizeMatriz = matrizAdyacencia.length;  
 		int distancias[][] = crearMatrizDeDistancias(matrizAdyacencia);  
-   
+		
+	    // Se realiza el proceso de actualización de las distancias mínimas entre todos los pares de vértices
 		for (int ind1 = 0; ind1 < sizeMatriz; ind1++) {  
 			for (int ind2 = 0; ind2 < sizeMatriz; ind2++) {  
-				for (int ind3 = 0; ind3 < sizeMatriz; ind3++) {  
+				for (int ind3 = 0; ind3 < sizeMatriz; ind3++) {
+	                // Si existe un camino entre los vértices ind2 e ind3 pasando por el vértice ind1 y es más corto que el camino directo...
 					if (distancias[ind2][ind1] < INF && distancias[ind1][ind3] < INF)  
 						distancias[ind2][ind3] = Math.min(distancias[ind2][ind3], distancias[ind2][ind1] + distancias[ind1][ind3]);  
 				}  
 			}  
 		}  
-    
+		
+		// Matriz contenedora de las distancias mínimas entre todos los pares de vértices
 		return distancias;
 	}
 	
+	// Función para crear una matriz de distancias inicializada a partir de una matriz de adyacencia.
 	private int[][] crearMatrizDeDistancias(int matrizAdyacencia[][]) {
 		
-	   int INF = Integer.MAX_VALUE; 
-       int distancias[][] = new int[size][size];  
-   
-       for (int ind1 = 0; ind1 < size; ind1++) {  
-    	   for (int ind2 = 0; ind2 < size; ind2++) {  
+		int INF = Integer.MAX_VALUE; 
+		int distancias[][] = new int[size][size];  
+		
+		for (int ind1 = 0; ind1 < size; ind1++) {  
+			for (int ind2 = 0; ind2 < size; ind2++) {  
     		   
-    		   if (ind1 == ind2)  
-    			   distancias[ind1][ind2] = 0;  
-               else if (matrizAdyacencia[ind1][ind2] == 0)  
-            	   distancias[ind1][ind2] = INF;  
-               else  
-            	   distancias[ind1][ind2] = matrizAdyacencia[ind1][ind2];  
-           }  
-       }
+				if (ind1 == ind2)  
+					distancias[ind1][ind2] = 0;  
+				else if (matrizAdyacencia[ind1][ind2] == 0)  
+					distancias[ind1][ind2] = INF;  
+				else  
+					distancias[ind1][ind2] = matrizAdyacencia[ind1][ind2];  
+			}  
+		}
        
-       return distancias;  
-   }
+		return distancias;  
+	}
 	
 }

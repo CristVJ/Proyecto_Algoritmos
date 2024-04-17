@@ -6,7 +6,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		int cantNodos = 0, cantAristas = 0, distancia = 0, tiempo = 0, nodoAConectar = 0, verticeInicio = 0, verticeDestino = 0, choice = 0;
+		int cantNodos = 0, cantAristas = 0, distancia = 0, tiempo = 0, nodoAConectar = 0, verticeInicio = 0, verticeDestino = 0;
 		Scanner scanner = new Scanner(System.in);
 		boolean validado = false;
 		
@@ -26,7 +26,7 @@ public class Main {
 					System.out.print("\nERROR: La cantidad de aristas debe ser mayor a 0 ");
 					System.out.println();
 				}
-			}while(cantAristas <= 0);
+			} while(cantAristas <= 0);
 			
 			for (int ind1 = 0; ind1 < cantAristas; ind1++) {
 				
@@ -56,7 +56,7 @@ public class Main {
 						System.out.println("\nERROR: Por favor ingrese una distancia válida\n");
 					}
 					
-				}while (!validado);
+				} while (!validado);
 				validado = false;
 				
 				do {
@@ -72,29 +72,14 @@ public class Main {
 						System.out.println("\nERROR: Por favor ingrese un tiempo válido\n");
 					}
 					
-				}while (!validado);
+				} while (!validado);
 				
 				grafo.agregarArista(ind, nodoAConectar, distancia, tiempo);
 			}
 			
 		}
 		
-		/*
-		// Agregando nodo (PROCESO DE PRUEBA)
-		grafo.crearNodo();
-		grafo.agregarArista(3, 0, 3);
-		grafo.agregarArista(3, 2, 5);
-		System.out.println("LUEGO DE AGREGAR");
-		grafo.imprimirMatrizAdyacencia();
-		System.out.println();
-		
-		// Eliminando nodo (PROCESO DE PRUEBA)
-		grafo.eliminarNodo(2);
-		System.out.println("LUEGO DE BORRAR");
-		grafo.imprimirMatrizAdyacencia();
-		System.out.println();
-		*/
-		int opcion = 0;
+		int opcion1 = 0, opcion2 = 0;
 		boolean menu = true, menuModificar = true, menuMostrar = true, menuTiempo = true;
 		
 		do {
@@ -107,13 +92,13 @@ public class Main {
 			System.out.println("\t1. Agregar NODO\n"
 							 + "\t2. Modificar NODO\n"
 						 	 + "\t3. Eliminar NODO\n"
-						 	 + "\t4. Mostrar NODOS\n"
+						 	 + "\t4. Mostrar NODO\n"
 						 	 + "\t5. Salir\n");
 			
 			System.out.print("\tOpción: ");
-			opcion = scanner.nextInt();
+			opcion1 = scanner.nextInt();
 			
-			if (opcion == 1) {
+			if (opcion1 == 1) {
 
 				Nodo nuevoNodo = grafo.crearNodo();
 				
@@ -122,6 +107,7 @@ public class Main {
 				
 				for (int ind = 0; ind < cantAristas; ind++) {
 					
+					validado = false;
 					do {
 						
 						System.out.println("\nIndique con cuál nodo se conectará la arista "+(ind+1)+":");
@@ -173,7 +159,7 @@ public class Main {
 				System.out.println("\nSE AGREGÓ EL NODO: "+nuevoNodo.getId()+" EXITOSAMENTE\n");
 			}
 			
-			else if (opcion == 2) {
+			else if (opcion1 == 2) {
 				
 				int idNodoAModificar = 0;
 				Nodo nodoAModificar;
@@ -181,7 +167,7 @@ public class Main {
 				validado = false;
 				do {
 					
-					System.out.println("\nIngrese el nodo que desea modificar: ");
+					System.out.println("\n\tIngrese el nodo que desea modificar: ");
 					idNodoAModificar = scanner.nextInt();
 					
 					nodoAModificar = grafo.buscarNodoById(idNodoAModificar);
@@ -206,9 +192,9 @@ public class Main {
 							 		 + "\t5. Salir\n");
 					
 					System.out.print("\tOpción: ");
-					opcion = scanner.nextInt();
+					opcion1 = scanner.nextInt();
 					
-					if (opcion == 1) {
+					if (opcion1 == 1) {
 						
 						validado = false;
 						do {
@@ -259,7 +245,7 @@ public class Main {
 						
 					}
 					
-					else if (opcion == 2) {
+					else if (opcion1 == 2) {
 						
 						/* El borrado de arista solo será permitido si ambos nodos, el de origen y el de destino, cuentan
 						 * con más de una arista, para evitar que uno de estos se quede flotando. A continuación, se
@@ -309,7 +295,7 @@ public class Main {
 		
 					}
 					
-					else if (opcion == 3) {
+					else if (opcion1 == 3) {
 			
 						int indAristaAModificar = 0;
 						System.out.println();
@@ -355,7 +341,7 @@ public class Main {
 						
 					}
 					
-					else if (opcion == 4) {
+					else if (opcion1 == 4) {
 
 						int indAristaAModificar = 0;
 						System.out.println();
@@ -401,21 +387,21 @@ public class Main {
 						
 					}
 					
-					else if (opcion == 5) {
+					else if (opcion1 == 5) {
 						menuModificar = false;
 					}
 					
-					else if (opcion > 5 || opcion <= 0) {
+					else if (opcion1 > 5 || opcion1 <= 0) {
 						System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 					}
 					
-					opcion = 0;
+					opcion1 = 0;
 					
 				} while (menuModificar);
 				
 			}
 			
-			else if (opcion == 3) {
+			else if (opcion1 == 3) {
 				
 				int nodoAEliminar = 0;
 				validado = false;
@@ -435,12 +421,12 @@ public class Main {
 				grafo.eliminarNodo(nodoAEliminar);
 			}
 			
-			else if (opcion == 4) {
+			else if (opcion1 == 4) {
 				
 				do {
 					
 					System.out.println();
-					System.out.print("\t¿Qué deseas mostrar?\n ");
+					System.out.print("\tElija lo que desee mostrar\n ");
 					System.out.println();
 					
 					System.out.println("\t1. Matriz Adyacencia Actual por DISTANCIA\n"
@@ -450,39 +436,40 @@ public class Main {
 						 	 + "\t5. Árbol de Expansión Mínima\n"
 						 	 + "\t6. Salir\n");
 					
-					opcion = scanner.nextInt();
+					System.out.print("\tOpción: ");
+					opcion1 = scanner.nextInt();
 					
-					if(opcion == 1) {
+					if(opcion1 == 1) {
 						System.out.println();
 						grafo.imprimirMatrizAdyacencia(true);
 						System.out.println();
 					}
 					
-					else if(opcion == 2) {
+					else if(opcion1 == 2) {
 						System.out.println();
 						grafo.imprimirMatrizAdyacencia(false);
 						System.out.println();
 					}
 					
-					else if(opcion == 3) {
-						System.out.print("Ingrese el nodo de origen: ");
+					else if(opcion1 == 3) {
+						System.out.print("\tIngrese el nodo de origen: ");
 						verticeInicio = scanner.nextInt();
-						System.out.print("Ingrese el nodo de destino: ");
+						System.out.print("\tIngrese el nodo de destino: ");
 						verticeDestino = scanner.nextInt();
 						do {
-							System.out.print("¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
-							choice = scanner.nextInt();
-							if(choice == 1) {
+							System.out.print("\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
+							opcion2 = scanner.nextInt();
+							if(opcion2 == 1) {
 								grafo.dijkstra(grafo.generarMatrizAdyacencia(true), verticeInicio, verticeDestino);
 								menuTiempo = false;
 							}
 							
-							else if(choice == 2) {
+							else if(opcion2 == 2) {
 								grafo.dijkstra(grafo.generarMatrizAdyacencia(false), verticeInicio, verticeDestino);
 								menuTiempo = false;
 							}
 							
-							else if (choice > 2 || choice <= 0) {
+							else if (opcion2 > 2 || opcion2 <= 0) {
 								System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 							}
 							
@@ -490,12 +477,12 @@ public class Main {
 						menuTiempo = true;
 					}
 					
-					else if(opcion == 4) {
+					else if(opcion1 == 4) {
 						
 						do {
 							System.out.print("¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
-							choice = scanner.nextInt();
-							if(choice == 1) {
+							opcion2 = scanner.nextInt();
+							if(opcion2 == 1) {
 								int[][] distancias = grafo.floydwarshall(grafo.generarMatrizAdyacencia(true)); 
 								
 								System.out.println("\nDistancias más cortas entre todos los pares de vértices");
@@ -510,7 +497,7 @@ public class Main {
 							    menuTiempo = false;
 							}
 							
-							else if(choice == 2) {
+							else if(opcion2 == 2) {
 								int[][] tiem = grafo.floydwarshall(grafo.generarMatrizAdyacencia(false)); 
 								System.out.println("\nDistancias más cortas entre todos los pares de vértices");
 							    for (int ind1 = 0; ind1 < tiem.length; ind1++) {  
@@ -524,7 +511,7 @@ public class Main {
 							    menuTiempo = false;
 							}
 							
-							else if (choice > 2 || choice <= 0) {
+							else if (opcion2 > 2 || opcion2 <= 0) {
 								System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 							}
 							
@@ -533,23 +520,23 @@ public class Main {
 						menuTiempo = true;
 					}
 					
-					else if(opcion == 5) {
+					else if(opcion1 == 5) {
 						do {
 							System.out.print("¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
-							choice = scanner.nextInt();
-							if(choice == 1) {
+							opcion2 = scanner.nextInt();
+							if(opcion2 == 1) {
 								grafo.kruskal(grafo.generarMatrizAdyacencia(true));
 								//grafo.prim(grafo.generarMatrizAdyacencia(true));
 								menuTiempo = false;
 							}
 							
-							else if(choice == 2) {
+							else if(opcion2 == 2) {
 								grafo.kruskal(grafo.generarMatrizAdyacencia(false));
 								//grafo.prim(grafo.generarMatrizAdyacencia(false));
 								menuTiempo = false;
 							}
 							
-							else if (choice > 2 || choice <= 0) {
+							else if (opcion2 > 2 || opcion2 <= 0) {
 								System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 							}
 							
@@ -558,24 +545,24 @@ public class Main {
 						
 					}
 					
-					else if(opcion == 6) {
+					else if(opcion1 == 6) {
 						menuMostrar = false;
 					}
 					
-					else if (opcion > 6 || opcion <= 0) {
+					else if (opcion1 > 6 || opcion1 <= 0) {
 						System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 					}
 					
-					opcion = 0;
+					opcion1 = 0;
 					
 				}while(menuMostrar);
 			}
 			
-			else if (opcion == 5) {
+			else if (opcion1 == 5) {
 				menu = false;
 			}
 			
-			else if (opcion > 5 || opcion <= 0) {
+			else if (opcion1 > 5 || opcion1 <= 0) {
 				System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 			}
 			
