@@ -309,7 +309,7 @@ public class Grafo {
 
 		visitado[0] = true;
 
-		System.out.println("Arista : Peso");
+		System.out.println("\n\tArista : Peso");
 
 		while (cantAristas < size - 1) {
     	
@@ -338,7 +338,7 @@ public class Grafo {
 		    	}
 		    }
 	    
-		    System.out.println(indFil + " - " + indCol + " :  " + matriz[indFil][indCol]);
+		    System.out.println("\t"+indFil + " - " + indCol + " :  " + matriz[indFil][indCol]);
 		    visitado[indCol] = true;
 		    cantAristas++;
 		}	
@@ -390,36 +390,34 @@ public class Grafo {
 	        }
 	 
 	        union(padre, a, b);
-	        System.out.printf("Arista %d:(%d, %d) costo:%d \n", cantAristas++, a, b, min);
+	        System.out.printf("\n\tArista %d:(%d, %d) costo:%d \n", cantAristas++, a, b, min);
 	        costoMinimo += min;
 	    }
 	    
-	    System.out.printf("\n Costo mínimo = %d \n", costoMinimo);
+	    System.out.printf("\n\tCosto mínimo = %d \n", costoMinimo);
 	}
 	
-	public void dijkstra(int[][] matriz, int verticeInicial, int nodoDestino) {
+	public void dijkstra(int[][] matriz, int verticeIn, int nodoDest, Grafo graf) {
 
 	    boolean[] verticesVisitados = new boolean[size];
-	    // Arreglo para almacenar las distancias mínimas desde el vértice inicial a cada vértice
 	    int[] distancias = new int[size];
-	    // Arreglo para almacenar los predecesores de cada vértice en el camino más corto
 	    int[] predecesores = new int[size];
-
-	    // Se inicializan todos los vértices como no visitados, con distancia infinita y sin predecesores
+	    Map<Integer, Integer> idToIndMap = new HashMap<>();
+	    
 	    for (int ind = 0; ind < size; ind++) {
 	        verticesVisitados[ind] = false;
 	        distancias[ind] = Integer.MAX_VALUE;
 	        predecesores[ind] = -1; 
+	        idToIndMap.put(grafo.get(ind).getId(), ind);
 	    }
+	    int indOrigen = idToIndMap.get(graf.buscarNodoById(verticeIn).getId());
+	    int indDestino = idToIndMap.get(graf.buscarNodoById(nodoDest).getId());
+	    distancias[indOrigen] = 0;
 
-	    distancias[verticeInicial] = 0;
-	    
-	    /* Se encuentra el vértice con la distancia mínima no visitado, mientras el nodo destino no esté visitado */
-	    while (!verticesVisitados[nodoDestino]) {
+	    while (!verticesVisitados[indDestino]) {
 	        int aux = encontrarMenorDistancia(distancias, verticesVisitados);
 	        verticesVisitados[aux] = true;
 
-	        // Se actualizan las distancias mínimas a los vértices vecinos no visitados
 	        for (int ind1 = 0; ind1 < size; ind1++) {
 	            if (!verticesVisitados[ind1] && matriz[aux][ind1] != 0 &&
 	                (distancias[aux] + matriz[aux][ind1] < distancias[ind1])) {
@@ -429,8 +427,8 @@ public class Grafo {
 	        }
 	    }
 
-	    imprimirCamino(predecesores, nodoDestino, verticeInicial, distancias);
-	} 
+	    imprimirCamino(predecesores, indDestino, indOrigen, distancias);
+	}
     
 	// Esta función tiene como finalidad encontrar el vértice con la distancia mínima entre los vértices no visitados
 	private static int encontrarMenorDistancia(int[] distancias, boolean[] verticesVisitados) {
@@ -465,7 +463,7 @@ public class Grafo {
 	    camino.add(0, verticeInicial);
 	    
 	    // Despliegue organizado del camino y el peso total
-	    System.out.print("Camino desde " + verticeInicial + " hasta " + verticeDestino + ": ");
+	    System.out.print("\n\tCamino desde " + verticeInicial + " hasta " + verticeDestino + ": ");
 	    int pesoTotal = distancias[verticeDestino];
 	    for (int ind = 0; ind < camino.size(); ind++) {
 	        System.out.print(camino.get(ind));

@@ -6,7 +6,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		int cantNodos = 0, cantAristas = 0, distancia = 0, tiempo = 0, nodoAConectar = 0, verticeInicio = 0, verticeDestino = 0;
+		int cantNodos = 0, cantAristas = 0, distancia = 0, tiempo = 0, nodoAConectar = 0, verticeInicio = 0, verticeDestino = 0, choice = 0;
 		Scanner scanner = new Scanner(System.in);
 		boolean validado = false;
 		
@@ -19,7 +19,7 @@ public class Main {
 		for (int ind = 0; ind < cantNodos; ind++) {
 			
 			do {
-				System.out.print("\nIndique la cantidad de aristas que tendrá el nodo "+(ind+1)+": ");
+				System.out.print("\nIndique la cantidad de aristas que tendrá el nodo "+ind+": ");
 				cantAristas = scanner.nextInt();
 				if(cantAristas <= 0) {
 					System.out.println();
@@ -452,40 +452,65 @@ public class Main {
 					}
 					
 					else if(opcion1 == 3) {
-						System.out.print("\tIngrese el nodo de origen: ");
-						verticeInicio = scanner.nextInt();
-						System.out.print("\tIngrese el nodo de destino: ");
-						verticeDestino = scanner.nextInt();
+						
 						do {
-							System.out.print("\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
-							opcion2 = scanner.nextInt();
-							if(opcion2 == 1) {
-								grafo.dijkstra(grafo.generarMatrizAdyacencia(true), verticeInicio, verticeDestino);
+							
+							System.out.print("\tIngrese el nodo de origen: ");
+							verticeInicio = scanner.nextInt();
+							
+							if(grafo.buscarNodoById(verticeInicio) != null) {
+								menuTiempo = false;
+							}
+							else {
+								System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
+							}
+						}while(menuTiempo);
+						menuTiempo = true;
+						
+						do {
+							System.out.print("\tIngrese el nodo de destino: ");
+							verticeDestino = scanner.nextInt();
+							
+							if(grafo.buscarNodoById(verticeDestino) != null) {
 								menuTiempo = false;
 							}
 							
-							else if(opcion2 == 2) {
-								grafo.dijkstra(grafo.generarMatrizAdyacencia(false), verticeInicio, verticeDestino);
+							else {
+								System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
+							}
+						}while(menuTiempo);
+						
+						do {
+							System.out.print("\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
+							choice = scanner.nextInt();
+							if(choice == 1) {
+								grafo.dijkstra(grafo.generarMatrizAdyacencia(true), verticeInicio, verticeDestino, grafo);
 								menuTiempo = false;
 							}
 							
-							else if (opcion2 > 2 || opcion2 <= 0) {
-								System.out.println("\nERROR: Por favor ingrese una opción válida\n");
+							else if(choice == 2) {
+								grafo.dijkstra(grafo.generarMatrizAdyacencia(false), verticeInicio, verticeDestino, grafo);
+								menuTiempo = false;
+							}
+							
+							else if (choice > 2 || choice <= 0) {
+								System.out.println("\n\tERROR: Por favor ingrese una opción válida\n");
 							}
 							
 						}while(menuTiempo);
 						menuTiempo = true;
+						menuTiempo = true;
 					}
 					
 					else if(opcion1 == 4) {
-						
+
 						do {
-							System.out.print("¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
-							opcion2 = scanner.nextInt();
-							if(opcion2 == 1) {
+							System.out.print("\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
+							choice = scanner.nextInt();
+							if(choice == 1) {
 								int[][] distancias = grafo.floydwarshall(grafo.generarMatrizAdyacencia(true)); 
 								
-								System.out.println("\nDistancias más cortas entre todos los pares de vértices");
+								System.out.println("\n\tDistancias más cortas entre todos los pares de vértices: ");
 							    for (int ind1 = 0; ind1 < distancias.length; ind1++) {  
 							        for (int ind2 = 0; ind2 < distancias.length; ind2++) {  
 							        	System.out.printf("%d ", distancias[ind1][ind2]);  
@@ -497,9 +522,9 @@ public class Main {
 							    menuTiempo = false;
 							}
 							
-							else if(opcion2 == 2) {
+							else if(choice == 2) {
 								int[][] tiem = grafo.floydwarshall(grafo.generarMatrizAdyacencia(false)); 
-								System.out.println("\nDistancias más cortas entre todos los pares de vértices");
+								System.out.println("\n\tTiempos más cortos entre todos los pares de vértices: ");
 							    for (int ind1 = 0; ind1 < tiem.length; ind1++) {  
 							        for (int ind2 = 0; ind2 < tiem.length; ind2++) {  
 							        	System.out.printf("%d ", tiem[ind1][ind2]);  
@@ -511,7 +536,7 @@ public class Main {
 							    menuTiempo = false;
 							}
 							
-							else if (opcion2 > 2 || opcion2 <= 0) {
+							else if (choice > 2 || choice <= 0) {
 								System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 							}
 							
@@ -522,21 +547,21 @@ public class Main {
 					
 					else if(opcion1 == 5) {
 						do {
-							System.out.print("¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo");
-							opcion2 = scanner.nextInt();
-							if(opcion2 == 1) {
+							System.out.print("\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
+							choice = scanner.nextInt();
+							if(choice == 1) {
 								grafo.kruskal(grafo.generarMatrizAdyacencia(true));
 								//grafo.prim(grafo.generarMatrizAdyacencia(true));
 								menuTiempo = false;
 							}
 							
-							else if(opcion2 == 2) {
+							else if(choice == 2) {
 								grafo.kruskal(grafo.generarMatrizAdyacencia(false));
 								//grafo.prim(grafo.generarMatrizAdyacencia(false));
 								menuTiempo = false;
 							}
 							
-							else if (opcion2 > 2 || opcion2 <= 0) {
+							else if (choice > 2 || choice <= 0) {
 								System.out.println("\nERROR: Por favor ingrese una opción válida\n");
 							}
 							
