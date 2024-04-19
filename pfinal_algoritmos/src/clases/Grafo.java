@@ -237,6 +237,28 @@ public class Grafo {
 	
 	}
 	
+	public boolean existeAristaEntreNodos(int idNodoOrigen, int idNodoDestino) {
+		
+		boolean existe = false;
+		Nodo nodoOrigen = buscarNodoById(idNodoOrigen);
+		Nodo nodoDestino = buscarNodoById(idNodoDestino);
+		
+		if (nodoOrigen != null && nodoDestino != null) {
+			
+			int ind = 0, cantAristas = nodoOrigen.getAristas().size();
+			while (ind < cantAristas && !existe) {
+				
+				if (nodoOrigen.getAristas().get(ind).getOrigen() == idNodoOrigen && nodoOrigen.getAristas().get(ind).getDestino() == idNodoDestino)
+					existe = true;
+				
+				ind++;
+			}
+			
+		}
+		
+		return existe;
+	}
+	
 	/* Generación de matriz adyacencia para ser utilizada en la ejecución de los algoritmos. Si "usarDistancia"
 	 * es verdadero, se utilizará el atributo distancia como peso de la arista; en caso contrario, se usará el tiempo */
 	public int[][] generarMatrizAdyacencia(boolean usarDistancia) {
