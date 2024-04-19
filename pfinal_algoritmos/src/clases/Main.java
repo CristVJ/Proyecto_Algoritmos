@@ -86,7 +86,7 @@ public class Main {
 			
 			System.out.println();
 			// Por defecto, siempre se imprimirá una matriz de adyacencia con pesos como distancias
-			grafo.imprimirMatrizAdyacencia(true);
+			grafo.imprimirMatrizAdyacencia(true,grafo);
 			System.out.println();
 			
 			System.out.println("\t1. Agregar NODO\n"
@@ -454,13 +454,13 @@ public class Main {
 					
 					if(opcion1 == 1) {
 						System.out.println();
-						grafo.imprimirMatrizAdyacencia(true);
+						grafo.imprimirMatrizAdyacencia(true,grafo);
 						System.out.println();
 					}
 					
 					else if(opcion1 == 2) {
 						System.out.println();
-						grafo.imprimirMatrizAdyacencia(false);
+						grafo.imprimirMatrizAdyacencia(false,grafo);
 						System.out.println();
 					}
 					
@@ -497,12 +497,12 @@ public class Main {
 							System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
 							choice = scanner.nextInt();
 							if(choice == 1) {
-								grafo.dijkstra(grafo.generarMatrizAdyacencia(true), verticeInicio, verticeDestino, grafo);
+								grafo.dijkstra(grafo.generarMatrizAdyacencia(true,grafo), verticeInicio, verticeDestino, grafo);
 								menuTiempo = false;
 							}
 							
 							else if(choice == 2) {
-								grafo.dijkstra(grafo.generarMatrizAdyacencia(false), verticeInicio, verticeDestino, grafo);
+								grafo.dijkstra(grafo.generarMatrizAdyacencia(false,grafo), verticeInicio, verticeDestino, grafo);
 								menuTiempo = false;
 							}
 							
@@ -521,7 +521,7 @@ public class Main {
 							System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
 							choice = scanner.nextInt();
 							if(choice == 1) {
-								int[][] distancias = grafo.floydwarshall(grafo.generarMatrizAdyacencia(true)); 
+								int[][] distancias = grafo.floydwarshall(grafo.generarMatrizAdyacencia(true,grafo)); 
 								
 								System.out.println("\n\tDistancias más cortas entre todos los pares de vértices: ");
 							    for (int ind1 = 0; ind1 < distancias.length; ind1++) {  
@@ -536,7 +536,7 @@ public class Main {
 							}
 							
 							else if(choice == 2) {
-								int[][] tiem = grafo.floydwarshall(grafo.generarMatrizAdyacencia(false)); 
+								int[][] tiem = grafo.floydwarshall(grafo.generarMatrizAdyacencia(false,grafo)); 
 								System.out.println("\n\tTiempos más cortos entre todos los pares de vértices: ");
 							    for (int ind1 = 0; ind1 < tiem.length; ind1++) {  
 							        for (int ind2 = 0; ind2 < tiem.length; ind2++) {  
@@ -563,13 +563,13 @@ public class Main {
 							System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
 							choice = scanner.nextInt();
 							if(choice == 1) {
-								grafo.kruskal(grafo.generarMatrizAdyacencia(true));
+								grafo.kruskal(grafo.generarMatrizAdyacencia(true,grafo));
 								//grafo.prim(grafo.generarMatrizAdyacencia(true));
 								menuTiempo = false;
 							}
 							
 							else if(choice == 2) {
-								grafo.kruskal(grafo.generarMatrizAdyacencia(false));
+								grafo.kruskal(grafo.generarMatrizAdyacencia(false,grafo));
 								//grafo.prim(grafo.generarMatrizAdyacencia(false));
 								menuTiempo = false;
 							}

@@ -259,17 +259,24 @@ public class Grafo {
 		return existe;
 	}
 	
+	//Generación de un mapa Hash que enlace el id de los nodos con las posiciones vistas en la matriz de adyacencia
+	public Map<Integer, Integer> generarMapaHash() {
+		Map<Integer, Integer> mapa = new HashMap<>();
+	    for (int ind = 0; ind < grafo.size(); ind++)
+	    	mapa.put(grafo.get(ind).getId(), ind);
+	    //Explicar esto a Nicolas
+	    return mapa;
+	}
+	
 	/* Generación de matriz adyacencia para ser utilizada en la ejecución de los algoritmos. Si "usarDistancia"
 	 * es verdadero, se utilizará el atributo distancia como peso de la arista; en caso contrario, se usará el tiempo */
-	public int[][] generarMatrizAdyacencia(boolean usarDistancia) {
-		
+	public int[][] generarMatrizAdyacencia(boolean usarDistancia, Grafo graf) {
+
 	    // Inicializar la matriz de adyacencia con ceros
 	    int matrizAdyacencia[][] = new int[size][size];
 
 	    // Asociamiento de IDs de los nodos con sus índices en la matriz de adyacencia
-	    Map<Integer, Integer> idToIndMap = new HashMap<>();
-	    for (int ind = 0; ind < grafo.size(); ind++)
-	        idToIndMap.put(grafo.get(ind).getId(), ind);
+	    Map<Integer, Integer> idToIndMap = graf.generarMapaHash();
 
 	    // Guardado de los pesos (distancia o tiempo) de las aristas en la matriz de adyacencia
 	    for (Nodo nodo : grafo) {
@@ -297,9 +304,9 @@ public class Grafo {
 	}
 	
 	// Despliegue organizado e identificado en consola de la matriz de adyacencia descriptiva del grafo no dirigido
-	public void imprimirMatrizAdyacencia(boolean usarDistancia) {
+	public void imprimirMatrizAdyacencia(boolean usarDistancia, Grafo graf) {
 		
-		int matriz[][] = generarMatrizAdyacencia(usarDistancia);
+		int matriz[][] = generarMatrizAdyacencia(usarDistancia, graf);
 		
 		System.out.print("\t   ");
 		for (int ind = 0; ind < size; ind++) {
@@ -424,16 +431,17 @@ public class Grafo {
 	    boolean[] verticesVisitados = new boolean[size];
 	    int[] distancias = new int[size];
 	    int[] predecesores = new int[size];
-	    Map<Integer, Integer> idToIndMap = new HashMap<>();
+	    //Explicar esto a Nicolas
+	    Map<Integer, Integer> mapa = new HashMap<>();
 	    
 	    for (int ind = 0; ind < size; ind++) {
 	        verticesVisitados[ind] = false;
 	        distancias[ind] = Integer.MAX_VALUE;
 	        predecesores[ind] = -1; 
-	        idToIndMap.put(grafo.get(ind).getId(), ind);
+	        mapa.put(grafo.get(ind).getId(), ind);
 	    }
-	    int indOrigen = idToIndMap.get(graf.buscarNodoById(verticeIn).getId());
-	    int indDestino = idToIndMap.get(graf.buscarNodoById(nodoDest).getId());
+	    int indOrigen = mapa.get(graf.buscarNodoById(verticeIn).getId());
+	    int indDestino = mapa.get(graf.buscarNodoById(nodoDest).getId());
 	    distancias[indOrigen] = 0;
 
 	    while (!verticesVisitados[indDestino]) {
@@ -449,7 +457,7 @@ public class Grafo {
 	        }
 	    }
 
-	    imprimirCamino(predecesores, indDestino, indOrigen, distancias);
+	    imprimirCamino(predecesores, indDestino, indOrigen, distancias, mapa);
 	}
     
 	// Esta función tiene como finalidad encontrar el vértice con la distancia mínima entre los vértices no visitados
@@ -471,12 +479,11 @@ public class Grafo {
 	} 
 	
 	
-	private static void imprimirCamino(int[] predecesores, int verticeDestino, int verticeInicial, int[] distancias) {
+	private static void imprimirCamino(int[] predecesores, int verticeDestino, int verticeInicial, int[] distancias, Map<Integer, Integer> mapa) {
 		
 		// Lista encargada de almacenar el camino
 		List<Integer> camino = new ArrayList<>();
-	    int verticeActual = verticeDestino;
-	    
+	    int verticeActual = verticeDestino, nodoInicial = 0, nodoDestino = 0, busqueda = 0, recorrido = 0;
 	    // Se recorre el camino desde el vértice destino hasta el inicial, mediante los predecesores
 	    while (verticeActual != -1 && verticeActual != verticeInicial) {
 	        camino.add(0, verticeActual);
@@ -485,10 +492,33 @@ public class Grafo {
 	    camino.add(0, verticeInicial);
 	    
 	    // Despliegue organizado del camino y el peso total
-	    System.out.print("\n\tCamino desde " + verticeInicial + " hasta " + verticeDestino + ": ");
+	    //Explicar esto a Nicolas
+        for (Map.Entry<Integer, Integer> entradas : mapa.entrySet()) {
+            if (entradas.getValue() == verticeInicial) {
+            	nodoInicial = entradas.getKey();
+            	busqueda++;
+            }
+            
+            if (entradas.getValue() == verticeDestino) {
+            	nodoDestino = entradas.getKey();
+            	busqueda++;
+            }
+            
+            if(busqueda == 2)
+            	break;
+        }
+        
+	    System.out.print("\n\tCamino desde " + nodoInicial + " hasta " + nodoDestino + ": ");
 	    int pesoTotal = distancias[verticeDestino];
+	    //Explicar esto a Nicolas
 	    for (int ind = 0; ind < camino.size(); ind++) {
-	        System.out.print(camino.get(ind));
+	        for (Map.Entry<Integer, Integer> entradas : mapa.entrySet()) {
+	            if (entradas.getValue() == camino.get(ind)) {
+	            	recorrido = entradas.getKey();
+	            	break;
+	            }
+	        }
+	        System.out.print(recorrido);
 	        if (ind != camino.size() - 1) {
 	            System.out.print(" -> ");
 	        }
