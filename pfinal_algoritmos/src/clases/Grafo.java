@@ -33,6 +33,419 @@ public class Grafo {
 		this.grafo = grafo;
 	}
 	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Se encarga de crear el grafo inicial sobre el cual se realizarán las modificaciones y análisis de rutas */
+	public void crearGrafo(int cantNodos) {
+		
+		int cantAristas = 0, nodoAConectar = 0, distancia = 0, tiempo = 0;
+		boolean validado = false;
+		Scanner scanner = new Scanner(System.in);
+		
+		inicializarGrafo(cantNodos);
+		
+		for (int ind = 0; ind < cantNodos; ind++) {
+			
+			do {
+				System.out.print("\nIndique la cantidad de aristas que tendrá el nodo "+ind+": ");
+				cantAristas = scanner.nextInt();
+				if (cantAristas <= 0)
+					System.out.print("\nERROR: La cantidad de aristas debe ser mayor a 0\n");
+
+			} while(cantAristas <= 0);
+			
+			for (int ind1 = 0; ind1 < cantAristas; ind1++) {
+				
+				validado = false;
+				
+				do {
+					
+					System.out.print("\nIndique con cuál nodo se conectará la arista "+(ind1+1)+": ");
+					nodoAConectar = scanner.nextInt();
+					
+					if (buscarNodoById(nodoAConectar) != null)
+						validado = true;
+					else
+						System.out.println("\nERROR: Por favor ingrese un nodo válido\n");
+					
+				} while (!validado);
+				validado = false;
+				
+				do {
+					
+					System.out.print("\nIndique la distancia de conexión de la arista "+(ind1+1)+": ");
+					distancia = scanner.nextInt();
+					
+					if (distancia > 0)
+						validado = true;
+					else
+						System.out.println("\nERROR: Por favor ingrese una distancia válida\n");
+					
+				} while (!validado);
+				validado = false;
+				
+				do {
+					
+					System.out.print("\nIndique el tiempo de conexión de la arista "+(ind1+1)+": ");
+					tiempo = scanner.nextInt();
+					
+					if (tiempo > 0)
+						validado = true;
+					else
+						System.out.println("\nERROR: Por favor ingrese un tiempo válido\n");
+					
+				} while (!validado);
+				
+				if (!existeAristaEntreNodos(ind,nodoAConectar))
+					agregarArista(ind, nodoAConectar, distancia, tiempo);
+				
+			}
+		}
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Su objetivo es permitirle al usuario agregar un nodo al grafo luego de realizar las validaciones pertinentes */
+	public void agregarNodo() {
+		
+		int cantAristas = 0;
+		Scanner scanner = new Scanner(System.in);
+		
+		Nodo nuevoNodo = crearNodo();
+		
+		do {
+			System.out.print("\n\tIndique la cantidad de aristas que tendrá el nuevo nodo: ");
+			cantAristas = scanner.nextInt();
+			if (cantAristas <= 0)
+				System.out.print("\n\tERROR: La cantidad de aristas debe ser mayor a 0\n");
+
+		} while(cantAristas <= 0);
+		
+		for (int ind = 0; ind < cantAristas; ind++) {
+			
+			Arista nuevaArista = new Arista();
+			nuevaArista = crearAristaValidada(nuevoNodo.getId());
+			
+			if (nuevaArista != null)
+				agregarArista(nuevaArista.getOrigen(), nuevaArista.getDestino(), nuevaArista.getDistancia(), nuevaArista.getTiempo());
+		
+		}
+		
+		System.out.println("\n\tSe agregó el nodo "+nuevoNodo.getId()+" exitosamente\n");
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Tiene como finalidad permitirle al usuario eliminar un nodo del grafo después de validar lo necesario */
+	public void elegirNodoAEliminar() {
+		
+		int nodoAEliminar = 0;
+		boolean validado = false;
+		Scanner scanner = new Scanner(System.in);
+		
+		do {
+			
+			System.out.print("\n\tIngrese el nodo que desea borrar: ");
+			nodoAEliminar = scanner.nextInt();
+			
+			if (buscarNodoById(nodoAEliminar) != null)
+				validado = true;
+			else
+				System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
+			
+		} while (!validado);
+		
+		eliminarNodo(nodoAEliminar);
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Encargada de permitirle al usuario crear una arista, a partir de un origen, que cumpla con los
+	 * requerimientos y se adapte a las limitaciones impuestas explicadas en su implementación para un 
+	 * correcto funcionamiento */
+	public Arista crearAristaValidada(int origen) {
+		
+		int destino = 0, distancia = 0, tiempo = 0;
+		boolean validado = false;
+		Scanner scanner = new Scanner(System.in);
+		Arista nuevaArista = new Arista();
+		nuevaArista.setOrigen(origen);
+		
+		do {
+			
+			System.out.print("\n\tIndique con cuál nodo se conectará la arista: ");
+			destino = scanner.nextInt();
+			
+			/* Solo será permitida la creación de una arista siempre y cuando:
+			 * - Exista el nodo al cual se desee hacer la conexión
+			 * - Origen y destino sean diferentes
+			 * - No se haya creado una arista igual anteriormente */
+			if (buscarNodoById(destino) != null && origen != destino) {
+				if (!existeAristaEntreNodos(origen, destino))
+					validado = true;
+				else
+					System.out.println("\n\tERROR: Ya existe una arista entre estos nodos. Considere modificar la existente\n");
+
+			}
+			else
+				System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
+			
+		} while (!validado);
+		nuevaArista.setDestino(destino);
+		validado = false;
+		
+		do {
+			
+			System.out.print("\n\tIndique la distancia de conexión de la arista: ");
+			distancia = scanner.nextInt();
+			
+			if (distancia > 0)
+				validado = true;
+			else
+				System.out.println("\n\tERROR: Por favor ingrese una distancia válida\n");
+			
+		} while (!validado);
+		nuevaArista.setDistancia(distancia);
+		validado = false;
+		
+		do {
+			
+			System.out.print("\n\tIndique el tiempo de conexión de la arista: ");
+			tiempo = scanner.nextInt();
+			
+			if (tiempo > 0)
+				validado = true;
+			else
+				System.out.println("\n\tERROR: Por favor ingrese un tiempo válido\n");
+			
+		} while (!validado);
+		nuevaArista.setTiempo(tiempo);
+		
+		return nuevaArista;
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Esta función le permite al usuario seleccionar la arista que desee eliminar a partir del nodo de origen */
+	public void elegirAristaAEliminar(Nodo nodoOrigen) {
+		
+		boolean validado = false;
+		Scanner scanner = new Scanner(System.in);
+		
+		/* El borrado de arista solo será permitido si ambos nodos, el de origen y el de destino, cuentan
+		 * con más de una arista, para evitar que uno de estos se quede "flotando". A continuación, se
+		 * verifica lo anterior para el nodo de origen */
+		if (nodoOrigen.getAristas().size() > 1) {
+			int indAristaAEliminar = 0;
+			System.out.println();
+			
+			/* Se despliega una lista organizada de todas las aristas que contiene ese nodo, para facilitarle
+			 * al usuario la elección de borrado */
+			listarAristasNodo(nodoOrigen);
+			System.out.println();
+			
+			do {
+				
+				System.out.print("\n\tIndique la arista que desea eliminar: ");
+				indAristaAEliminar = scanner.nextInt();
+				
+				if (indAristaAEliminar > 0 && indAristaAEliminar <= nodoOrigen.getAristas().size())
+					validado = true;
+				else
+					System.out.println("\n\tERROR: Por favor ingrese una arista válida\n");
+				
+			} while (!validado);
+			
+			Arista aristaAEliminar = nodoOrigen.getAristas().get(indAristaAEliminar-1);
+			Nodo nodoDestinoArista = buscarNodoById(aristaAEliminar.getDestino());
+			
+			// Se verifica si el nodo de destino cuenta con más de una arista
+			if (nodoDestinoArista.getAristas().size() > 1) {
+				
+				eliminarArista(encontrarAristaAdyacente(aristaAEliminar));
+				eliminarArista(aristaAEliminar);
+			}
+			else 
+				System.out.println("\n\tEl nodo de destino cuenta con una sola arista. Considere eliminar ese nodo\n");
+	
+		}
+		else 
+			System.out.println("\n\tEste nodo cuenta con una sola arista. Considere eliminar el nodo\n");
+		
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Esta función le permite al usuario seleccionar la arista que desee modificar (distancia o tiempo) a partir
+	 * del nodo de origen */
+	public void modificarArista(Nodo nodoOrigen, boolean modificarDistancia) {
+		
+		int peso = 0;
+		boolean validado = false;
+		Scanner scanner = new Scanner(System.in);
+		
+		int indAristaAModificar = 0;
+		System.out.println();
+		listarAristasNodo(nodoOrigen);
+		System.out.println();
+		
+		// Modificación de distancia o tiempo, según se indique en el parámetro booleano "modificarDistancia"
+		validado = false;
+		do {
+			
+			if (modificarDistancia)
+				System.out.print("\n\tIndique la arista a la que desea modificarle la distancia: ");
+			else
+				System.out.print("\n\tIndique la arista a la que desea modificarle el tiempo: ");
+			
+			indAristaAModificar = scanner.nextInt();
+			
+			if (indAristaAModificar > 0 && indAristaAModificar <= nodoOrigen.getAristas().size())
+				validado = true;
+			else
+				System.out.println("\n\tERROR: Por favor ingrese una arista válida\n");
+			
+		} while (!validado);
+
+		validado = false;
+		do {
+			
+			if (modificarDistancia)
+				System.out.print("\n\tIndique la nueva distancia de conexión de la arista: ");
+			else
+				System.out.print("\n\tIndique el nuevo tiempo de conexión de la arista: ");
+	
+			peso = scanner.nextInt();
+			
+			if (peso > 0)
+				validado = true;
+			else {
+				if (modificarDistancia)
+					System.out.println("\n\tERROR: Por favor ingrese una distancia válida\n");
+				else
+					System.out.println("\n\tERROR: Por favor ingrese un tiempo válido\n");
+				
+			}
+		} while (!validado);
+		
+		// Se busca la arista en ambas direcciones para ser modificada, pues se está trabajando con un grafo no dirigido
+		Arista aristaAModificar = nodoOrigen.getAristas().get(indAristaAModificar-1);
+		Arista aristaAdyacente = encontrarAristaAdyacente(aristaAModificar);
+		
+		if (modificarDistancia) {
+			aristaAModificar.setDistancia(peso);
+			aristaAdyacente.setDistancia(peso);
+		}
+		else {
+			aristaAModificar.setTiempo(peso);
+			aristaAdyacente.setTiempo(peso);
+		}
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Permite al usuario elegir la opción de muestreo del algoritmo de creación del árbol de expansión mínima
+	 * (Kruskal o Prim) */
+	public void mostrarArbol() {
+		
+		int opcionPeso = 0, opcionAlgoritmo = 0;
+		boolean menu = true;
+		Scanner scanner = new Scanner(System.in);
+		
+		// Primero, es necesario elegir en base a qué valor del peso se generará el árbol de expansión mínima
+		do {
+			System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
+			opcionPeso = scanner.nextInt();
+			
+			if (opcionPeso == 1)
+				menu = false;
+		
+			else if (opcionPeso == 2)
+				menu = false;
+			
+			else if (opcionPeso > 2 || opcionPeso <= 0)
+				System.out.println("\nERROR: Por favor ingrese una opción válida\n");
+			
+		} while(menu);
+		menu = true;
+		
+		// Luego, se procede a permitir elegir con cuál algoritmo se desea crearlo (Kruscal o Prim)
+		do {
+		
+			System.out.print("\n\tElija el algoritmo que desee utilizar:\n"
+					   	   + "\t1. Kruskal\n"
+					   	   + "\t2. Prim\n");
+			
+			System.out.print("\n\tOpción: ");
+			opcionAlgoritmo = scanner.nextInt();
+			
+			if (opcionAlgoritmo == 1) {
+				
+				if (opcionPeso == 1)
+					kruskal(generarMatrizAdyacencia(true));
+				else
+					kruskal(generarMatrizAdyacencia(false));
+				
+				menu = false;
+			}
+			else if (opcionAlgoritmo == 2) {
+				
+				if (opcionPeso == 1)
+					prim(generarMatrizAdyacencia(true));
+				else
+					prim(generarMatrizAdyacencia(false));
+				
+				menu = false;
+			}
+			else
+				System.out.println("\n\tERROR: Por favor ingrese una opción válida\n");
+		
+		} while (menu);
+	}
+	
+	/* FUNCIÓN DE DESPLIEGUE EN EL MAIN 
+	 * Tiene como finalidad permitirle al usuario eliminar un nodo del grafo después de validar lo necesario */
+	public void mostrarRutaMasCorta() {
+		
+		int nodoInicio = 0, nodoDestino = 0, opcionPeso = 0;
+		boolean menu = true;
+		Scanner scanner = new Scanner(System.in);
+		
+		do {
+			
+			System.out.print("\n\tIngrese el nodo de origen: ");
+			nodoInicio = scanner.nextInt();
+			
+			if (buscarNodoById(nodoInicio) != null)
+				menu = false;
+			else
+				System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
+
+		} while(menu);
+		menu = true;
+		
+		do {
+			System.out.print("\n\tIngrese el nodo de destino: ");
+			nodoDestino = scanner.nextInt();
+			
+			if(buscarNodoById(nodoDestino) != null)
+				menu = false;
+			else
+				System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
+
+		} while(menu);
+		
+		do {
+			System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
+			opcionPeso = scanner.nextInt();
+			
+			if (opcionPeso == 1) {
+				dijkstra(generarMatrizAdyacencia(true), nodoInicio, nodoDestino);
+				menu = false;
+			}
+			else if (opcionPeso == 2) {
+				dijkstra(generarMatrizAdyacencia(false), nodoInicio, nodoDestino);
+				menu = false;
+			}
+			else if (opcionPeso > 2 || opcionPeso <= 0)
+				System.out.println("\n\tERROR: Por favor ingrese una opción válida\n");
+			
+		} while(menu);
+	}
+	
 	// Su objetivo es encontrar un nodo a partir de su id único, y retornarlo en caso de que exista
 	public Nodo buscarNodoById(int idNodo) {
 		
@@ -46,7 +459,6 @@ public class Grafo {
 				
 				nodoABuscar = grafo.get(ind);
 				encontrado = true;
-				
 			}
 			
 			ind++;
@@ -67,629 +479,6 @@ public class Grafo {
 			grafo.add(nuevoNodo);
 			id++;
 		}
-	}
-	
-	public Grafo generarPrimerGrafo() {
-		
-		int cantNodos = 0, cantAristas = 0, nodoAConectar = 0, distancia = 0, tiempo = 0;
-		boolean validado = false;
-		Scanner scanner = new Scanner(System.in);
-		Grafo grafo = new Grafo();
-		
-		System.out.print("¿Con cuántos nodos desea crear el grafo? ");
-		cantNodos = scanner.nextInt();
-		
-		grafo.inicializarGrafo(cantNodos);
-		
-		for (int ind = 0; ind < cantNodos; ind++) {
-			
-			do {
-				System.out.print("\nIndique la cantidad de aristas que tendrá el nodo "+ind+": ");
-				cantAristas = scanner.nextInt();
-				if(cantAristas <= 0) {
-					System.out.println();
-					System.out.print("\nERROR: La cantidad de aristas debe ser mayor a 0 ");
-					System.out.println();
-				}
-			} while(cantAristas <= 0);
-			
-			for (int ind1 = 0; ind1 < cantAristas; ind1++) {
-				
-				do {
-					
-					System.out.print("\nIndique con cuál nodo se conectará la arista "+(ind+1)+": ");
-					nodoAConectar = scanner.nextInt();
-					
-					if (grafo.buscarNodoById(nodoAConectar) != null)
-						validado = true;
-					else
-						System.out.println("\nERROR: Por favor ingrese un nodo válido\n");
-					
-				} while (!validado);
-				validado = false;
-				
-				do {
-					
-					System.out.print("\nIndique la distancia de conexión de la arista "+(ind+1)+": ");
-					distancia = scanner.nextInt();
-					
-					if (distancia > 0) {
-						validado = true;
-					}
-					
-					else {
-						System.out.println("\nERROR: Por favor ingrese una distancia válida\n");
-					}
-					
-				} while (!validado);
-				validado = false;
-				
-				do {
-					
-					System.out.print("\nIndique el tiempo de conexión de la arista "+(ind+1)+": ");
-					tiempo = scanner.nextInt();
-					
-					if (tiempo > 0) {
-						validado = true;
-					}
-					
-					else {
-						System.out.println("\nERROR: Por favor ingrese un tiempo válido\n");
-					}
-					
-				} while (!validado);
-				
-				grafo.agregarArista(ind, nodoAConectar, distancia, tiempo);
-			}
-			
-		}
-		
-		return grafo;
-	}
-	
-	/* En esta funcion se imprime el menu principal del programa
-	 * 
-	 * */
-	public void menuPrincipal(Grafo graf) {
-		
-		Scanner scanner = new Scanner(System.in);
-		int opcion1 = 0, opcion2 = 0, cantAristas = 0, nodoAConectar = 0, distancia = 0, tiempo = 0, verticeInicio = 0, verticeDestino = 0, choice = 0;
-		boolean validado = false, menu = true, menuModificar = true, menuMostrar = true, menuTiempo = true;
-		
-		do {
-			
-			System.out.println();
-			// Por defecto, siempre se imprimirá una matriz de adyacencia con pesos como distancias
-			graf.imprimirMatrizAdyacencia(true,graf);
-			System.out.println();
-			
-			System.out.println("\t1. Agregar NODO\n"
-							 + "\t2. Modificar NODO\n"
-						 	 + "\t3. Eliminar NODO\n"
-						 	 + "\t4. Mostrar NODO\n"
-						 	 + "\t5. Salir\n");
-			
-			System.out.print("\tOpción: ");
-			opcion1 = scanner.nextInt();
-			
-			if (opcion1 == 1) {
-
-				Nodo nuevoNodo = graf.crearNodo();
-				
-				System.out.println("\n¿Cuántas aristas tendrá el nuevo nodo?");
-				cantAristas = scanner.nextInt();
-				
-				for (int ind = 0; ind < cantAristas; ind++) {
-					
-					validado = false;
-					do {
-						
-						System.out.print("\n\tIndique con cuál nodo se conectará la arista: ");
-						nodoAConectar = scanner.nextInt();
-						
-						/* Solo será permitida la creación de una arista en un nodo nuevo siempre y cuando:
-						 * - Exista el nodo al cual se desee hacer la conexión
-						 * - Origen y destino sean diferentes */
-						if (graf.buscarNodoById(nodoAConectar) != null && nuevoNodo.getId() != nodoAConectar)
-							validado = true;
-						else
-							System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
-						
-						
-					} while (!validado);
-					validado = false;
-					
-					do {
-						
-						System.out.println("\nIndique la distancia de conexión de la arista "+(ind+1)+":");
-						distancia = scanner.nextInt();
-						
-						if (distancia > 0) {
-							validado = true;
-						}
-						
-						else {
-							System.out.println("\nERROR: Por favor ingrese una distancia válida\n");
-						}
-						
-					} while (!validado);
-					validado = false;
-					
-					do {
-						
-						System.out.println("\nIndique el tiempo de conexión de la arista "+(ind+1)+":");
-						tiempo = scanner.nextInt();
-						
-						if (tiempo > 0) {
-							validado = true;
-						}
-						
-						else {
-							System.out.println("\nERROR: Por favor ingrese un tiempo válido\n");
-						}
-						
-					} while (!validado);
-					
-					graf.agregarArista(nuevoNodo.getId(), nodoAConectar, distancia, tiempo);
-					
-				}
-				
-				System.out.println("\nSE AGREGÓ EL NODO: "+nuevoNodo.getId()+" EXITOSAMENTE\n");
-			}
-			
-			else if (opcion1 == 2) {
-				
-				int idNodoAModificar = 0;
-				Nodo nodoAModificar;
-				
-				validado = false;
-				do {
-					
-					System.out.println("\n\tIngrese el nodo que desea modificar: ");
-					idNodoAModificar = scanner.nextInt();
-					
-					nodoAModificar = graf.buscarNodoById(idNodoAModificar);
-					
-					if (nodoAModificar != null)
-						validado = true;
-					else
-						System.out.println("\nERROR: Por favor ingrese un nodo válido\n");
-					
-				} while (!validado);
-				
-				do {
-					
-					System.out.println();
-					System.out.print("\tElija la opción de modificación que desee:\n ");
-					System.out.println();
-					
-					System.out.println("\t1. Agregar arista\n"
-							 		 + "\t2. Eliminar arista\n"
-							 		 + "\t3. Editar distancia\n"
-							 		 + "\t4. Editar tiempo\n"
-							 		 + "\t5. Salir\n");
-					
-					System.out.print("\tOpción: ");
-					opcion1 = scanner.nextInt();
-					
-					if (opcion1 == 1) {
-						
-						validado = false;
-						do {
-							
-							System.out.print("\n\tIndique con cuál nodo se conectará la arista: ");
-							nodoAConectar = scanner.nextInt();
-							
-							/* Solo será permitida la creación de una arista siempre y cuando:
-							 * - Exista el nodo al cual se desee hacer la conexión
-							 * - Origen y destino sean diferentes
-							 * - No se haya creado una arista igual anteriormente */
-							if (graf.buscarNodoById(nodoAConectar) != null && nodoAModificar.getId() != nodoAConectar) {
-								if (!graf.existeAristaEntreNodos(nodoAModificar.getId(), nodoAConectar))
-									validado = true;
-								else
-									System.out.println("\n\tERROR: Ya existe una arista entre estos nodos. Considere modificar la existente\n");
-								
-							}
-							else
-								System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
-							
-						} while (!validado);
-						validado = false;
-						
-						do {
-							
-							System.out.print("\n\tIndique la distancia de conexión de la arista: ");
-							distancia = scanner.nextInt();
-							
-							if (distancia > 0) {
-								validado = true;
-							}
-							
-							else {
-								System.out.println("\n\tERROR: Por favor ingrese una distancia válida\n");
-							}
-							
-						} while (!validado);
-						validado = false;
-						
-						do {
-							
-							System.out.print("\n\tIndique el tiempo de conexión de la arista: ");
-							tiempo = scanner.nextInt();
-							
-							if (tiempo > 0) {
-								validado = true;
-							}
-							
-							else {
-								System.out.println("\n\tERROR: Por favor ingrese un tiempo válido\n");
-							}
-							
-						} while (!validado);
-						
-						graf.agregarArista(nodoAModificar.getId(), nodoAConectar, distancia, tiempo);
-						
-					}
-					
-					else if (opcion1 == 2) {
-						
-						/* El borrado de arista solo será permitido si ambos nodos, el de origen y el de destino, cuentan
-						 * con más de una arista, para evitar que uno de estos se quede flotando. A continuación, se
-						 * verifica lo anterior para el nodo de origen */
-						if (nodoAModificar.getAristas().size() > 1) {
-							int indAristaAEliminar = 0;
-							System.out.println();
-							
-							/* Se despliega una lista organizada de todas las aristas que contiene ese nodo, para facilitarle
-							 * al usuario la elección de borrado */
-							graf.listarAristasNodo(nodoAModificar);
-							System.out.println();
-							
-							validado = false;
-							do {
-								
-								System.out.print("\n\tIndique la arista que desea eliminar: ");
-								indAristaAEliminar = scanner.nextInt();
-								
-								if (indAristaAEliminar > 0 && indAristaAEliminar <= nodoAModificar.getAristas().size()) {
-									validado = true;
-								}
-								
-								else {
-									System.out.println("\n\tERROR: Por favor ingrese una arista válida\n");
-								}
-								
-							} while (!validado);
-							
-							Arista aristaAEliminar = nodoAModificar.getAristas().get(indAristaAEliminar-1);
-							Nodo nodoDestinoArista = graf.buscarNodoById(aristaAEliminar.getDestino());
-							
-							/* El borrado de arista solo será permitido si ambos nodos, el de origen y el de destino, cuentan
-							 * con más de una arista, para evitar que uno de estos se quede flotando. A continuación, se
-							 * verifica lo anterior para el nodo de destino */
-							if (nodoDestinoArista.getAristas().size() > 1) {
-								
-								graf.eliminarArista(graf.encontrarAristaAdyacente(aristaAEliminar));
-								graf.eliminarArista(aristaAEliminar);
-							}
-							else 
-								System.out.println("\n\tEl nodo de destino cuenta con una sola arista. Considere eliminar ese nodo\n");
-							
-						}
-						else 
-							System.out.println("\n\tEste nodo cuenta con una sola arista. Considere eliminar el nodo\n");
-		
-					}
-					
-					else if (opcion1 == 3) {
-			
-						int indAristaAModificar = 0;
-						System.out.println();
-						graf.listarAristasNodo(nodoAModificar);
-						System.out.println();
-						
-						validado = false;
-						do {
-							
-							System.out.print("\n\tIndique la arista a la que desea modificarle la distancia: ");
-							indAristaAModificar = scanner.nextInt();
-							
-							if (indAristaAModificar > 0 && indAristaAModificar <= nodoAModificar.getAristas().size()) {
-								validado = true;
-							}
-							
-							else {
-								System.out.println("\n\tERROR: Por favor ingrese una arista válida\n");
-							}
-							
-						} while (!validado);
-						
-						validado = false;
-						do {
-							
-							System.out.print("\n\tIndique la nueva distancia de conexión de la arista: ");
-							distancia = scanner.nextInt();
-							
-							if (distancia > 0) {
-								validado = true;
-							}
-							
-							else {
-								System.out.println("\n\tERROR: Por favor ingrese una distancia válida\n");
-							}
-							
-						} while (!validado);
-						
-						Arista aristaAModificar = nodoAModificar.getAristas().get(indAristaAModificar-1) ;
-						aristaAModificar.setDistancia(distancia);
-						Arista aristaAdyacente = graf.encontrarAristaAdyacente(aristaAModificar);
-						aristaAdyacente.setDistancia(distancia);
-						
-					}
-					
-					else if (opcion1 == 4) {
-
-						int indAristaAModificar = 0;
-						System.out.println();
-						graf.listarAristasNodo(nodoAModificar);
-						System.out.println();
-						
-						validado = false;
-						do {
-							
-							System.out.print("\n\tIndique la arista a la que desea modificarle el tiempo: ");
-							indAristaAModificar = scanner.nextInt();
-							
-							if (indAristaAModificar > 0 && indAristaAModificar <= nodoAModificar.getAristas().size()) {
-								validado = true;
-							}
-							
-							else {
-								System.out.println("\n\tERROR: Por favor ingrese una arista válida\n");
-							}
-							
-						} while (!validado);
-						
-						validado = false;
-						do {
-							
-							System.out.print("\n\tIndique el nuevo tiempo de conexión de la arista: ");
-							tiempo = scanner.nextInt();
-							
-							if (tiempo > 0) {
-								validado = true;
-							}
-							
-							else {
-								System.out.println("\n\tERROR: Por favor ingrese un tiempo válido\n");
-							}
-							
-						} while (!validado);
-						
-						Arista aristaAModificar = nodoAModificar.getAristas().get(indAristaAModificar-1) ;
-						aristaAModificar.setTiempo(tiempo);
-						Arista aristaAdyacente = graf.encontrarAristaAdyacente(aristaAModificar);
-						aristaAdyacente.setTiempo(tiempo);
-						
-					}
-					
-					else if (opcion1 == 5) {
-						menuModificar = false;
-					}
-					
-					else if (opcion1 > 5 || opcion1 <= 0) {
-						System.out.println("\n\tERROR: Por favor ingrese una opción válida\n");
-					}
-					
-					opcion1 = 0;
-					
-				} while (menuModificar);
-				
-			}
-			
-			else if (opcion1 == 3) {
-				
-				int nodoAEliminar = 0;
-				validado = false;
-				
-				do {
-					
-					System.out.print("\n\tIngrese el nodo que desea borrar: ");
-					nodoAEliminar = scanner.nextInt();
-					
-					if (graf.buscarNodoById(nodoAEliminar) != null)
-						validado = true;
-					else
-						System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
-					
-				} while (!validado);
-				
-				graf.eliminarNodo(nodoAEliminar);
-			}
-			
-			else if (opcion1 == 4) {
-				graf.menuSecundario(graf);
-			}
-			
-			else if (opcion1 == 5) {
-				menu = false;
-			}
-			
-			else if (opcion1 > 5 || opcion1 <= 0) {
-				System.out.println("\nERROR: Por favor ingrese una opción válida\n");
-			}
-			
-			menuMostrar = true;
-			
-		} while (menu);
-	}
-	/*
-	 * En esta funcion se imprime el menu Secundario
-	 * */
-	public void menuSecundario(Grafo graf) {
-		
-		Scanner scanner = new Scanner(System.in);
-		int opcion1 = 0, verticeInicio = 0, verticeDestino = 0, choice = 0;
-		boolean menuMostrar = true, menuTiempo = true;
-		
-		do {
-			
-			System.out.println();
-			System.out.print("\tElija lo que desee mostrar\n ");
-			System.out.println();
-			
-			System.out.println("\t1. Matriz Adyacencia Actual por DISTANCIA\n"
-					 + "\t2. Matriz Adyacencia Actual por TIEMPO\n"
-					 + "\t3. Ruta más corta entre dos NODOS\n"
-				 	 + "\t4. Ruta más corta de todos los NODOS\n"
-				 	 + "\t5. Árbol de Expansión Mínima\n"
-				 	 + "\t6. Salir\n");
-			
-			System.out.print("\tOpción: ");
-			opcion1 = scanner.nextInt();
-			
-			if(opcion1 == 1) {
-				System.out.println();
-				graf.imprimirMatrizAdyacencia(true,graf);
-				System.out.println();
-			}
-			
-			else if(opcion1 == 2) {
-				System.out.println();
-				graf.imprimirMatrizAdyacencia(false,graf);
-				System.out.println();
-			}
-			
-			else if(opcion1 == 3) {
-				
-				do {
-					
-					System.out.print("\n\tIngrese el nodo de origen: ");
-					verticeInicio = scanner.nextInt();
-					
-					if(graf.buscarNodoById(verticeInicio) != null) {
-						menuTiempo = false;
-					}
-					else {
-						System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
-					}
-				}while(menuTiempo);
-				menuTiempo = true;
-				
-				do {
-					System.out.print("\n\tIngrese el nodo de destino: ");
-					verticeDestino = scanner.nextInt();
-					
-					if(graf.buscarNodoById(verticeDestino) != null) {
-						menuTiempo = false;
-					}
-					
-					else {
-						System.out.println("\n\tERROR: Por favor ingrese un nodo válido\n");
-					}
-				}while(menuTiempo);
-				
-				do {
-					System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
-					choice = scanner.nextInt();
-					if(choice == 1) {
-						graf.dijkstra(graf.generarMatrizAdyacencia(true,graf), verticeInicio, verticeDestino, graf);
-						menuTiempo = false;
-					}
-					
-					else if(choice == 2) {
-						graf.dijkstra(graf.generarMatrizAdyacencia(false,graf), verticeInicio, verticeDestino, graf);
-						menuTiempo = false;
-					}
-					
-					else if (choice > 2 || choice <= 0) {
-						System.out.println("\n\tERROR: Por favor ingrese una opción válida\n");
-					}
-					
-				}while(menuTiempo);
-				menuTiempo = true;
-			}
-			
-			else if(opcion1 == 4) {
-
-				do {
-					System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
-					choice = scanner.nextInt();
-					if(choice == 1) {
-						int[][] distancias = graf.floydwarshall(graf.generarMatrizAdyacencia(true,graf)); 
-						
-						System.out.println("\n\tDistancias más cortas entre todos los pares de vértices: ");
-					    for (int ind1 = 0; ind1 < distancias.length; ind1++) {  
-					        for (int ind2 = 0; ind2 < distancias.length; ind2++) {  
-					        	System.out.printf("%d ", distancias[ind1][ind2]);  
-					        }
-					        
-					        System.out.println();  
-					    }
-					    
-					    menuTiempo = false;
-					}
-					
-					else if(choice == 2) {
-						int[][] tiem = graf.floydwarshall(graf.generarMatrizAdyacencia(false,graf)); 
-						System.out.println("\n\tTiempos más cortos entre todos los pares de vértices: ");
-					    for (int ind1 = 0; ind1 < tiem.length; ind1++) {  
-					        for (int ind2 = 0; ind2 < tiem.length; ind2++) {  
-					        	System.out.printf("%d ", tiem[ind1][ind2]);  
-					        }
-					        
-					        System.out.println();  
-					    }
-					    
-					    menuTiempo = false;
-					}
-					
-					else if (choice > 2 || choice <= 0) {
-						System.out.println("\nERROR: Por favor ingrese una opción válida\n");
-					}
-					
-				}while(menuTiempo);
-				
-				menuTiempo = true;
-			}
-			
-			else if(opcion1 == 5) {
-				do {
-					System.out.print("\n\t¿En base a qué desea verlo?\n\t1. Distancia \n\t2. Tiempo\n\n\tOpción: ");
-					choice = scanner.nextInt();
-					if(choice == 1) {
-						graf.kruskal(graf.generarMatrizAdyacencia(true,graf));
-						//graf.prim(graf.generarMatrizAdyacencia(true, graf));
-						menuTiempo = false;
-					}
-					
-					else if(choice == 2) {
-						graf.kruskal(graf.generarMatrizAdyacencia(false,graf));
-						//graf.prim(graf.generarMatrizAdyacencia(false,graf));
-						menuTiempo = false;
-					}
-					
-					else if (choice > 2 || choice <= 0) {
-						System.out.println("\nERROR: Por favor ingrese una opción válida\n");
-					}
-					
-				}while(menuTiempo);
-				menuTiempo = true;
-				
-			}
-			
-			else if(opcion1 == 6) {
-				menuMostrar = false;
-			}
-			
-			else if (opcion1 > 6 || opcion1 <= 0) {
-				System.out.println("\nERROR: Por favor ingrese una opción válida\n");
-			}
-			
-			opcion1 = 0;
-			
-		}while(menuMostrar);
 	}
 	
 	public Nodo crearNodo() {
@@ -809,7 +598,6 @@ public class Grafo {
 					eliminado = true;
 				}
 					
-				
 				ind++;
 			}
 		}
@@ -855,7 +643,7 @@ public class Grafo {
 		int cantAristas = nodo.getAristas().size();
 		
 		for (int ind = 0; ind < cantAristas; ind++)
-			System.out.printf("%-2d. ( %-2d ) <---> ( %-2d ) | Distancia: %d | Tiempo: %d|\n", ind+1, nodo.getAristas().get(ind).getOrigen(),
+			System.out.printf("\t%-2d. ( %-2d ) <---> ( %-2d ) | Distancia: %d | Tiempo: %d|\n", ind+1, nodo.getAristas().get(ind).getOrigen(),
 							  nodo.getAristas().get(ind).getDestino(), nodo.getAristas().get(ind).getDistancia(), nodo.getAristas().get(ind).getTiempo());
 	
 	}
@@ -885,22 +673,21 @@ public class Grafo {
 	//Generación de un mapa Hash que enlace el id de los nodos con las posiciones vistas en la matriz de adyacencia
 	public Map<Integer, Integer> generarMapaHash() {
 		Map<Integer, Integer> mapa = new HashMap<>();
-		
-	    for (int ind = 0; ind < size; ind++)
+	    for (int ind = 0; ind < grafo.size(); ind++)
 	    	mapa.put(grafo.get(ind).getId(), ind);
-	    //Explicar esto a Nicolas
+	   
 	    return mapa;
 	}
 	
 	/* Generación de matriz adyacencia para ser utilizada en la ejecución de los algoritmos. Si "usarDistancia"
 	 * es verdadero, se utilizará el atributo distancia como peso de la arista; en caso contrario, se usará el tiempo */
-	public int[][] generarMatrizAdyacencia(boolean usarDistancia, Grafo graf) {
+	public int[][] generarMatrizAdyacencia(boolean usarDistancia) {
 
 	    // Inicializar la matriz de adyacencia con ceros
 	    int matrizAdyacencia[][] = new int[size][size];
 
 	    // Asociamiento de IDs de los nodos con sus índices en la matriz de adyacencia
-	    Map<Integer, Integer> idToIndMap = graf.generarMapaHash();
+	    Map<Integer, Integer> idToIndMap = generarMapaHash();
 
 	    // Guardado de los pesos (distancia o tiempo) de las aristas en la matriz de adyacencia
 	    for (Nodo nodo : grafo) {
@@ -928,24 +715,27 @@ public class Grafo {
 	}
 	
 	// Despliegue organizado e identificado en consola de la matriz de adyacencia descriptiva del grafo no dirigido
-	public void imprimirMatrizAdyacencia(boolean usarDistancia, Grafo graf) {
+	public void imprimirMatrizAdyacencia(int distancias[][]) {
 		
-		int matriz[][] = generarMatrizAdyacencia(usarDistancia, graf);
-		
-		System.out.print("\t   ");
-		for (int ind = 0; ind < size; ind++) {
-			System.out.printf("- %-3d", grafo.get(ind).getId());
-		}
-		System.out.print("\n\t");
-		for (int ind1 = 0; ind1 < size; ind1++) {
-			System.out.printf("%-2d ", grafo.get(ind1).getId());
-			for (int ind2 = 0; ind2 < size; ind2++) {
-				System.out.printf("| %-3d", matriz[ind1][ind2]);
+		if (distancias != null) {
+			
+			System.out.print("\n\t   ");
+			for (int ind = 0; ind < size; ind++) {
+				System.out.printf("- %-3d", grafo.get(ind).getId());
 			}
+			
 			System.out.print("\n\t");
+			for (int ind1 = 0; ind1 < size; ind1++) {
+				System.out.printf("%-2d ", grafo.get(ind1).getId());
+				for (int ind2 = 0; ind2 < size; ind2++) {
+					System.out.printf("| %-3d", distancias[ind1][ind2]);
+				}
+				
+				System.out.print("\n\t");
+			}
+			
+			System.out.println();
 		}
-		
-		System.out.println();
 	}
 	
 	public void prim (int matriz[][]) {
@@ -1050,30 +840,40 @@ public class Grafo {
 	    System.out.printf("\n\tCosto mínimo = %d \n", costoMinimo);
 	}
 	
-	public void dijkstra(int[][] matriz, int verticeIn, int nodoDest, Grafo graf) {
+	/* Función utilizada para encontrar el camino más corto desde un nodo de origen hasta un nodo destino
+	 * en un grafo dado en un grafo no dirigido */
+	public void dijkstra(int[][] matriz, int verticeIn, int nodoDest) {
 
-	    boolean[] verticesVisitados = new boolean[size];
+	    boolean[] nodosVisitados = new boolean[size];
 	    int[] distancias = new int[size];
 	    int[] predecesores = new int[size];
-	    //Explicar esto a Nicolas
+	    
+	    // Mapa para relacionar los id's de los nodos en el grafo con sus índices en la matriz
 	    Map<Integer, Integer> mapa = new HashMap<>();
 	    
+	    // Se inicializan todos los vértices como no visitados, con distancia infinita y sin predecesores
 	    for (int ind = 0; ind < size; ind++) {
-	        verticesVisitados[ind] = false;
+	        nodosVisitados[ind] = false;
 	        distancias[ind] = Integer.MAX_VALUE;
 	        predecesores[ind] = -1; 
+	        // Asignación correspondiente del índice a cada id de nodo en el grafo al mapa
 	        mapa.put(grafo.get(ind).getId(), ind);
 	    }
-	    int indOrigen = mapa.get(graf.buscarNodoById(verticeIn).getId());
-	    int indDestino = mapa.get(graf.buscarNodoById(nodoDest).getId());
+	    
+	    // Se obtienen los índices de origen y destino
+	    int indOrigen = mapa.get(buscarNodoById(verticeIn).getId());
+	    int indDestino = mapa.get(buscarNodoById(nodoDest).getId());
 	    distancias[indOrigen] = 0;
-
-	    while (!verticesVisitados[indDestino]) {
-	        int aux = encontrarMenorDistancia(distancias, verticesVisitados);
-	        verticesVisitados[aux] = true;
+	    
+	    /* Mientras no se haya visitado el índice de destino obtenido, se buscará el nodo con la distancia
+	     * mínima no visitado, para luego, en caso de que se halle, actualizar las distancias mínimas a 
+	     * los nodos vecinos no visitados */
+	    while (!nodosVisitados[indDestino]) {
+	        int aux = encontrarMenorDistancia(distancias, nodosVisitados);
+	        nodosVisitados[aux] = true;
 
 	        for (int ind1 = 0; ind1 < size; ind1++) {
-	            if (!verticesVisitados[ind1] && matriz[aux][ind1] != 0 &&
+	            if (!nodosVisitados[ind1] && matriz[aux][ind1] != 0 &&
 	                (distancias[aux] + matriz[aux][ind1] < distancias[ind1])) {
 	                distancias[ind1] = distancias[aux] + matriz[aux][ind1];
 	                predecesores[ind1] = aux;
@@ -1084,8 +884,8 @@ public class Grafo {
 	    imprimirCamino(predecesores, indDestino, indOrigen, distancias, mapa);
 	}
     
-	// Esta función tiene como finalidad encontrar el vértice con la distancia mínima entre los vértices no visitados
-	private static int encontrarMenorDistancia(int[] distancias, boolean[] verticesVisitados) {
+	// Esta función tiene como finalidad encontrar el nodo con la distancia mínima entre los nodos no visitados
+	private static int encontrarMenorDistancia(int[] distancias, boolean[] nodosVisitados) {
 		
 		int distanciaMinima = Integer.MAX_VALUE;  
 		int distanciaMinimaAlVertice = -1;
@@ -1093,7 +893,7 @@ public class Grafo {
 		
 		for (int ind = 0; ind < cantDistancias; ind++) {
 			
-			if (!verticesVisitados[ind] && distancias[ind] < distanciaMinima) {  
+			if (!nodosVisitados[ind] && distancias[ind] < distanciaMinima) {  
 				distanciaMinima = distancias[ind];  
 				distanciaMinimaAlVertice = ind;  
 			}  
@@ -1115,8 +915,7 @@ public class Grafo {
 	    }
 	    camino.add(0, verticeInicial);
 	    
-	    // Despliegue organizado del camino y el peso total
-	    //Explicar esto a Nicolas
+	    // Búsqueda de los id de nodos en el Mapa Hash
         for (Map.Entry<Integer, Integer> entradas : mapa.entrySet()) {
             if (entradas.getValue() == verticeInicial) {
             	nodoInicial = entradas.getKey();
@@ -1128,13 +927,16 @@ public class Grafo {
             	busqueda++;
             }
             
-            if(busqueda == 2)
+            // Inmediatamente después de que se encuentren los id's de origen y destino, se sale del ciclo
+            if (busqueda == 2)
             	break;
+            
         }
         
+	    // Despliegue organizado del camino y el peso total
 	    System.out.print("\n\tCamino desde " + nodoInicial + " hasta " + nodoDestino + ": ");
 	    int pesoTotal = distancias[verticeDestino];
-	    //Explicar esto a Nicolas
+	    
 	    for (int ind = 0; ind < camino.size(); ind++) {
 	        for (Map.Entry<Integer, Integer> entradas : mapa.entrySet()) {
 	            if (entradas.getValue() == camino.get(ind)) {
@@ -1143,9 +945,9 @@ public class Grafo {
 	            }
 	        }
 	        System.out.print(recorrido);
-	        if (ind != camino.size() - 1) {
-	            System.out.print(" -> ");
-	        }
+	        if (ind != camino.size() - 1)
+	        	System.out.print(" -> ");
+	      
 	    }
 	    
 	    System.out.println(" | Peso total: " + pesoTotal);
