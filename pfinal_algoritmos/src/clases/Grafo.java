@@ -847,7 +847,7 @@ public class Grafo {
 	            	
 	            	/* Se actualiza la arista mínima y sus nodos asociados si los nodos no pertenecen al mismo conjunto
 	            	 * y el peso de la arista es menor que el mínimo actual */
-	                if (encontrarVertice(padre, ind1) != encontrarVertice(padre, ind2) && matriz[ind1][ind2] < min) {
+	                if (encontrarVertice(padre, ind1) != encontrarVertice(padre, ind2) && matriz[ind1][ind2] < min && matriz[ind1][ind2] != 0) {
 	                	
 	                    min = matriz[ind1][ind2];
 	                    a = ind1;
