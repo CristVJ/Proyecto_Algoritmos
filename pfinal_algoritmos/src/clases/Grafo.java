@@ -743,7 +743,10 @@ public class Grafo {
 	    // Se inicializa el valor de infinito como el máximo valor entero posible
 		int INF = Integer.MAX_VALUE;
 		int cantAristas = 0;
-		
+		int busqueda = 0;
+		int nodo1 = 0;
+		int nodo2 = 0;
+		Map<Integer, Integer> mapa = generarMapaHash();
 		// Arreglo para marcar nodos visitados
 		boolean[] visitado = new boolean[size];
 		
@@ -781,7 +784,24 @@ public class Grafo {
 		    	}
 		    }
 	    
-		    System.out.println("\t"+indFil + " - " + indCol + " :  " + matriz[indFil][indCol]);
+	        for (Map.Entry<Integer, Integer> entradas : mapa.entrySet()) {
+	            if (entradas.getValue() == indFil) {
+	            	nodo1 = entradas.getKey();
+	            	busqueda++;
+	            }
+	            
+	            if (entradas.getValue() == indCol) {
+	            	nodo2 = entradas.getKey();
+	            	busqueda++;
+	            }
+	            
+	            // Inmediatamente después de que se encuentren los id's de origen y destino, se sale del ciclo
+	            if (busqueda == 2)
+	            	break;
+	            
+	        }
+	        busqueda = 0;
+		    System.out.println("\t"+nodo1 + " - " + nodo2 + " :  " + matriz[indFil][indCol]);
 		    visitado[indCol] = true;
 		    cantAristas++;
 		}	
@@ -808,6 +828,10 @@ public class Grafo {
 		int[] padre = new int[size];
 		int costoMinimo = 0;
 		int INF = Integer.MAX_VALUE;
+		int nodo1 = 0;
+		int nodo2 = 0;
+		int busqueda = 0;
+		Map<Integer, Integer> mapa = generarMapaHash();
 		
 	    // Se inicializa cada nodo como su propio padre.
 	    for (int ind = 0; ind < size; ind++)
@@ -833,7 +857,24 @@ public class Grafo {
 	        }
 	 
 	        union(padre, a, b);
-	        System.out.printf("\n\tArista %d:(%d, %d) costo:%d \n", cantAristas++, a, b, min);
+	        for (Map.Entry<Integer, Integer> entradas : mapa.entrySet()) {
+	            if (entradas.getValue() == a) {
+	            	nodo1 = entradas.getKey();
+	            	busqueda++;
+	            }
+	            
+	            if (entradas.getValue() == b) {
+	            	nodo2 = entradas.getKey();
+	            	busqueda++;
+	            }
+	            
+	            // Inmediatamente después de que se encuentren los id's de origen y destino, se sale del ciclo
+	            if (busqueda == 2)
+	            	break;
+	            
+	        }
+	        busqueda = 0;
+	        System.out.printf("\n\tArista %d:(%d, %d) costo:%d \n", cantAristas++, nodo1, nodo2, min);
 	        costoMinimo += min;
 	    }
 	    
